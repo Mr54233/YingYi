@@ -1,38 +1,40 @@
-name: Build Plugin
+name: Build
 
 on:
   push:
-    branches:
-      - tab-ui
-      - simple-ui
-      - lite
+    branches: [ main ]
   pull_request:
-    branches:
-      - tab-ui
-      - simple-ui
-      - lite
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.x'
+          dotnet-version: '8.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Restore
+        run: dotnet restore StrmAssistant/StrmAssistant.csproj
 
-      - name: Build the project
-        run: dotnet build --no-restore --configuration Release
+      - name: Build (Release)
+        run: dotnet build StrmAssistant/StrmAssistant.csproj -c Release --no-restore
+
+      - name: Show output
+        shell: pwsh
+        run: |
+          Get-ChildItem artifacts
+          Get-FileHash artifacts/YingYi.dll -Algorithm MD5 | Format-List
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: StrmAssistant
-          path: C:\Users\runneradmin\AppData\Roaming\Emby-Server\programdata\plugins\StrmAssistant${{ github.ref_name == 'lite' && 'Lite' || '' }}.dll
+          name: YingYi
+          path: artifacts/YingYi.dll
+          if-no-files-found: error
