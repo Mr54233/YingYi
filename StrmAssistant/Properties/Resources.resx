@@ -749,4 +749,76 @@
   <data name="ExclusiveControl_NoNfoSaverOptimization_No_Nfo_Saver_Optimization" xml:space="preserve">
     <value>No Nfo Saver Optimization</value>
   </data>
+  <data name="PinyinEnhanceOptions_EditorTitle_Pinyin_Enhance" xml:space="preserve">
+    <value>Pinyin Enhance</value>
+  </data>
+  <data name="PinyinSearchTask_Name_Pinyin_Search_Index" xml:space="preserve">
+    <value>Inject Pinyin Search Index</value>
+  </data>
+  <data name="PinyinSearchTask_Description_Inject_pinyin_search_tokens_into_the_Emby_search_index" xml:space="preserve">
+    <value>Injects pinyin search tokens into the Emby search index so Chinese titles can be found by pinyin initials or full pinyin.</value>
+  </data>
+  <data name="PinyinSortNameTask_Name_Pinyin_Sort_Title" xml:space="preserve">
+    <value>Generate Pinyin Sort Title</value>
+  </data>
+  <data name="PinyinSortNameTask_Description_Generate_pinyin_initials_as_sort_title_and_back_up_the_original_value" xml:space="preserve">
+    <value>Generates pinyin initials and writes them as the sort title, keeping the original value in a backup table.</value>
+  </data>
+  <data name="PinyinSortNameRollbackTask_Name_Rollback_Pinyin_Sort_Title" xml:space="preserve">
+    <value>Rollback Pinyin Sort Title</value>
+  </data>
+  <data name="PinyinSortNameRollbackTask_Description_Restore_original_sort_titles_and_drop_the_backup_table" xml:space="preserve">
+    <value>Restores every original sort title from the backup table and then drops it.</value>
+  </data>
+  <data name="CommunityIntroEnrichTask_Name_Community_Intro_Enrichment" xml:space="preserve">
+    <value>Community Intro Enrichment</value>
+  </data>
+  <data name="CommunityIntroEnrichTask_Description_Fills_missing_intro_markers_from_community_database" xml:space="preserve">
+    <value>Fills missing intro markers from community intro databases for episodes where local fingerprint detection found nothing.</value>
+  </data>
+  <data name="IntroSkipOptions_EnableCommunityIntroSource_Community_Intro_Source" xml:space="preserve">
+    <value>Community Intro Source</value>
+  </data>
+  <data name="IntroSkipOptions_EnableCommunityIntroSource_Fill_missing_intro_markers_from_community_database__Default_is_False_" xml:space="preserve">
+    <value>Fill missing intro markers from a community intro database for episodes where local detection found nothing. Default is OFF.</value>
+  </data>
+  <data name="IntroSkipOptions_CommunityIntroSources_Community_Intro_Sources" xml:space="preserve">
+    <value>Community Intro Sources</value>
+  </data>
+  <data name="IntroSkipOptions_CommunityIntroSources_Comma_separated_community_intro_sources__Default_is_IntroDb_" xml:space="preserve">
+    <value>Community intro sources to query. Default is IntroDb.</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceMinConfidence_Minimum_Confidence" xml:space="preserve">
+    <value>Minimum Confidence</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceMinConfidence_Minimum_confidence_threshold_0_1__Default_is_0_6_" xml:space="preserve">
+    <value>Minimum confidence threshold for community results, between 0 and 1. Default is 0.6.</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequestIntervalMs_Request_Interval_Milliseconds" xml:space="preserve">
+    <value>Request Interval (Milliseconds)</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequestIntervalMs_Interval_between_community_source_requests__Default_is_1100_" xml:space="preserve">
+    <value>Interval between community source requests in milliseconds. Default is 1100.</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceTimeoutSeconds_Request_Timeout_Seconds" xml:space="preserve">
+    <value>Request Timeout (Seconds)</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceTimeoutSeconds_Community_source_request_timeout__Default_is_10_" xml:space="preserve">
+    <value>Community source request timeout in seconds. Default is 10.</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceCacheDays_Negative_Result_Cache_Days" xml:space="preserve">
+    <value>Negative Result Cache (Days)</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceCacheDays_Cache_days_for_no_intro_verdicts__Default_is_30_" xml:space="preserve">
+    <value>Days to cache no-intro verdicts before querying again. Default is 30.</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequireManualConfirm_Require_Manual_Confirm" xml:space="preserve">
+    <value>Require Manual Confirm</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequireManualConfirm_Only_write_markers_after_manual_verification__Default_is_False_" xml:space="preserve">
+    <value>Only write community markers after manual verification. Default is OFF.</value>
+  </data>
+  <data name="InvalidCommunityIntroSource" xml:space="preserve">
+    <value>Community Intro Source requires Intro Skip Enhanced to be unlocked first.</value>
+  </data>
 </root>

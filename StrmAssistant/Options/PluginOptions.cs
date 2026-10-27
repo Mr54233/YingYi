@@ -41,6 +41,9 @@ namespace StrmAssistant.Options
         [DisplayNameL("ExperienceEnhanceOptions_EditorTitle_Experience_Enhance", typeof(Resources))]
         public ExperienceEnhanceOptions ExperienceEnhanceOptions { get; set; } = new ExperienceEnhanceOptions();
 
+        [DisplayNameL("PinyinEnhanceOptions_EditorTitle_Pinyin_Enhance", typeof(Resources))]
+        public PinyinEnhanceOptions PinyinEnhanceOptions { get; set; } = new PinyinEnhanceOptions();
+
         [DisplayNameL("AboutOptions_EditorTitle_About", typeof(Resources))]
         public AboutOptions AboutOptions { get; set; } = new AboutOptions();
 

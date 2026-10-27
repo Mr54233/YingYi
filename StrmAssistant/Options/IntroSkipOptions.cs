@@ -1,5 +1,6 @@
 using Emby.Web.GenericEdit;
 using Emby.Web.GenericEdit.Common;
+using Emby.Web.GenericEdit.Validation;
 using MediaBrowser.Model.Attributes;
 using MediaBrowser.Model.LocalizationAttributes;
 using StrmAssistant.Properties;
@@ -104,5 +105,67 @@ namespace StrmAssistant.Options
         [SelectItemsSource(nameof(IntroSkipPreferenceList))]
         [VisibleCondition(nameof(EnableIntroSkip), SimpleCondition.IsTrue)]
         public string IntroSkipPreferences { get; set; } = string.Empty;
+
+        [Browsable(false)]
+        public IEnumerable<EditorSelectOption> CommunityIntroSourceList { get; set; } = new List<EditorSelectOption>
+        {
+            new EditorSelectOption { Value = "IntroDb", Name = "IntroDB (introdb.app)", IsEnabled = true },
+            new EditorSelectOption { Value = "TheIntroDb", Name = "TheIntroDB (theintrodb.org)", IsEnabled = true }
+        };
+
+        [DisplayNameL("IntroSkipOptions_EnableCommunityIntroSource_Community_Intro_Source", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_EnableCommunityIntroSource_Fill_missing_intro_markers_from_community_database__Default_is_False_", typeof(Resources))]
+        [Required]
+        public bool EnableCommunityIntroSource { get; set; } = false;
+
+        [DisplayNameL("IntroSkipOptions_CommunityIntroSources_Community_Intro_Sources", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_CommunityIntroSources_Comma_separated_community_intro_sources__Default_is_IntroDb_", typeof(Resources))]
+        [EditMultilSelect]
+        [SelectItemsSource(nameof(CommunityIntroSourceList))]
+        [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
+        public string CommunityIntroSources { get; set; } = "IntroDb";
+
+        [DisplayNameL("IntroSkipOptions_CommunitySourceMinConfidence_Minimum_Confidence", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_CommunitySourceMinConfidence_Minimum_confidence_threshold_0_1__Default_is_0_6_", typeof(Resources))]
+        [MinValue(0), MaxValue(1)]
+        [Required]
+        [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
+        public double CommunitySourceMinConfidence { get; set; } = 0.6;
+
+        [DisplayNameL("IntroSkipOptions_CommunitySourceRequestIntervalMs_Request_Interval_Milliseconds", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_CommunitySourceRequestIntervalMs_Interval_between_community_source_requests__Default_is_1100_", typeof(Resources))]
+        [MinValue(0), MaxValue(60000)]
+        [Required]
+        [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
+        public int CommunitySourceRequestIntervalMs { get; set; } = 1100;
+
+        [DisplayNameL("IntroSkipOptions_CommunitySourceTimeoutSeconds_Request_Timeout_Seconds", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_CommunitySourceTimeoutSeconds_Community_source_request_timeout__Default_is_10_", typeof(Resources))]
+        [MinValue(1), MaxValue(120)]
+        [Required]
+        [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
+        public int CommunitySourceTimeoutSeconds { get; set; } = 10;
+
+        [DisplayNameL("IntroSkipOptions_CommunitySourceCacheDays_Negative_Result_Cache_Days", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_CommunitySourceCacheDays_Cache_days_for_no_intro_verdicts__Default_is_30_", typeof(Resources))]
+        [MinValue(1), MaxValue(365)]
+        [Required]
+        [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
+        public int CommunitySourceCacheDays { get; set; } = 30;
+
+        [DisplayNameL("IntroSkipOptions_CommunitySourceRequireManualConfirm_Require_Manual_Confirm", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_CommunitySourceRequireManualConfirm_Only_write_markers_after_manual_verification__Default_is_False_", typeof(Resources))]
+        [Required]
+        [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
+        public bool CommunitySourceRequireManualConfirm { get; set; } = false;
+
+        protected override void Validate(ValidationContext context)
+        {
+            if (EnableCommunityIntroSource && !UnlockIntroSkip)
+            {
+                context.AddValidationError(Resources.ResourceManager.GetString(
+                    "InvalidCommunityIntroSource", Plugin.Instance.DefaultUICulture) ?? "Community Intro Source requires Intro Skip Enhanced to be unlocked first.");
+            }
+        }
     }
 }

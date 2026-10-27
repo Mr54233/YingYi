@@ -25,6 +25,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="mediabrowser.server.core" Version="4.8.0.80" />
+    <!-- TinyPinyin (MIT) powers the pinyin layer (P1-1 / P1-2). It is merged into
+         YingYi.dll by the PostBuild ILRepack step below; see THIRD-PARTY-NOTICES.md. -->
+    <PackageReference Include="TinyPinyin" Version="1.1.0" />
+    <!-- SQLitePCL.pretty is provided by the Emby host at runtime; only its compile time
+         surface is needed, so it must never be shipped or repacked. -->
+    <PackageReference Include="SQLitePCL.pretty.core" Version="1.2.2">
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -59,7 +68,7 @@
     </PropertyGroup>
     <MakeDir Directories="$(_PluginOutDir)" />
     <Exec WorkingDirectory="$(_PluginOutDir)"
-          Command="&quot;$(ILRepack)&quot; /out:&quot;$(_PluginOutFull)&quot; &quot;$(_TargetPathFull)&quot; &quot;$(_TargetDirFull)ChineseConverter.dll&quot; /lib:&quot;$(_TargetDirFull)&quot;" />
+          Command="&quot;$(ILRepack)&quot; /out:&quot;$(_PluginOutFull)&quot; &quot;$(_TargetPathFull)&quot; &quot;$(_TargetDirFull)ChineseConverter.dll&quot; &quot;$(_TargetDirFull)TinyPinyin.dll&quot; /lib:&quot;$(_TargetDirFull)&quot;" />
   </Target>
   <!--
     契约回归（refcheck）构建后置钩子。

@@ -69,6 +69,12 @@ namespace StrmAssistant
         public readonly IApplicationHost ApplicationHost;
         public readonly IApplicationPaths ApplicationPaths;
 
+        /// <summary>
+        ///     Exposed so <see cref="Pinyin.EmbyDatabase"/> can reflect the ConnectionManager
+        ///     out of it (plan §2.5). Kept public to stay reachable from the module.
+        /// </summary>
+        public readonly IItemRepository ItemRepository;
+
         private readonly ILibraryManager _libraryManager;
         private readonly IUserManager _userManager;
         private readonly IUserDataManager _userDataManager;
@@ -85,6 +91,29 @@ namespace StrmAssistant
         private bool _currentEnableIntroSkip;
         private bool _currentUnlockIntroSkip;
         private bool _currentMergeMultiVersion;
+        private bool _currentPinyinSearch;
+        private bool _currentPinyinSortName;
+
+        private Pinyin.EmbyDatabase _pinyinDatabase;
+        private Pinyin.PinyinScanScheduler _pinyinScheduler;
+
+        /// <summary>
+        ///     P1-1 / P1-2 database access. Null only before the constructor ran.
+        /// </summary>
+        internal Pinyin.EmbyDatabase PinyinDatabase => _pinyinDatabase;
+
+        /// <summary>
+        ///     P1-1 / P1-2 timing layer (catch-up, post scan, event queue).
+        /// </summary>
+        internal Pinyin.PinyinScanScheduler PinyinScheduler => _pinyinScheduler;
+
+        /// <summary>
+        ///     Absolute path of the injection cursor, so the manual task can reuse the
+        ///     same progress marker as the background workers.
+        /// </summary>
+        public string PinyinCursorFilePath => _pinyinCursorFilePath;
+
+        private string _pinyinCursorFilePath;
 
         private static readonly HashSet<string> ExcludedCollectionTypes = new HashSet<string>
         {
@@ -119,6 +148,7 @@ namespace StrmAssistant
             _providerManager = providerManager;
             _fileSystem = fileSystem;
             _taskManager = taskManager;
+            ItemRepository = itemRepository;
 
             _currentMaxConcurrentCount = GetOptions().GeneralOptions.MaxConcurrentCount;
             _currentPersistMediaInfo = GetOptions().MediaInfoExtractOptions.PersistMediaInfoMode !=
@@ -129,6 +159,8 @@ namespace StrmAssistant
             _currentEnableIntroSkip = GetOptions().IntroSkipOptions.EnableIntroSkip;
             _currentUnlockIntroSkip = GetOptions().IntroSkipOptions.UnlockIntroSkip;
             _currentMergeMultiVersion = GetOptions().ExperienceEnhanceOptions.MergeMultiVersion;
+            _currentPinyinSearch = GetOptions().PinyinEnhanceOptions.EnablePinyinSearch;
+            _currentPinyinSortName = GetOptions().PinyinEnhanceOptions.EnablePinyinSortName;
             InitializeOptionCache();
 
             if (GetOptions().AboutOptions.DebugMode)
@@ -161,7 +193,18 @@ namespace StrmAssistant
             if (_currentCatchupMode) QueueManager.Initialize();
             if (_currentEnableIntroSkip) PlaySessionMonitor.Initialize();
 
+            // P1-1 / P1-2 wiring. Constructing the layer does no database work and no
+            // blocking wait, so it is safe inside the constructor; the catch-up run is
+            // scheduled by Start() as a detached Task.Run with a 60s Thread.Sleep.
+            _pinyinDatabase = new Pinyin.EmbyDatabase(Logger);
+            _pinyinCursorFilePath = Path.Combine(ApplicationPaths.ProgramDataPath, "plugins", "影医",
+                Pinyin.PinyinScanScheduler.CursorFileName);
+            _pinyinScheduler = new Pinyin.PinyinScanScheduler(Logger, _pinyinDatabase, _libraryManager,
+                ApplicationPaths.ProgramDataPath);
+            if (_currentPinyinSearch || _currentPinyinSortName) _pinyinScheduler.Start();
+
             _libraryManager.ItemAdded += OnItemAdded;
+            _libraryManager.ItemUpdated += OnItemUpdated;
             _libraryManager.ItemRemoved += OnItemRemoved;
             _providerManager.RefreshCompleted += OnRefreshCompleted;
             _userManager.UserCreated += OnUserCreated;
@@ -173,6 +216,20 @@ namespace StrmAssistant
 
         private void OnRefreshCompleted(object sender, GenericEventArgs<RefreshProgressInfo> e)
         {
+            // A metadata refresh resets SortName and rewrites the FTS document, so the
+            // pinyin layer must re-apply before the early return below.
+            if (_currentPinyinSearch || _currentPinyinSortName)
+            {
+                try
+                {
+                    _pinyinScheduler?.Enqueue(e.Argument.Item.InternalId);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Debug(ex.Message);
+                }
+            }
+
             if (_libraryManager.IsScanRunning) return;
 
             if (_currentMergeMultiVersion && e.Argument.Item.IsTopParent)
@@ -296,6 +353,30 @@ namespace StrmAssistant
                 {
                     NotificationApi.FavoritesUpdateSendNotification(e.Item);
                 }
+
+                // P1-1 / P1-2 third timing layer: queue the item and let the 30s timer
+                // batch write it. Never touch the database from this handler.
+                if (_currentPinyinSearch || _currentPinyinSortName)
+                {
+                    _pinyinScheduler?.Enqueue(e.Item.InternalId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug(ex.Message);
+                Logger.Debug(ex.StackTrace);
+            }
+        }
+
+        private void OnItemUpdated(object sender, ItemChangeEventArgs e)
+        {
+            try
+            {
+                if (!_currentPinyinSearch && !_currentPinyinSortName) return;
+
+                // Emby rewrites the FTS document with the plain name and resets SortName
+                // on every metadata update, so both have to be re-applied here.
+                _pinyinScheduler?.Enqueue(e.Item.InternalId);
             }
             catch (Exception ex)
             {
@@ -407,6 +488,14 @@ namespace StrmAssistant
                             ?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                             .Where(v => options.IntroSkipOptions.MarkerEnabledLibraryList.Any(option =>
                                 option.Value == v)) ?? Enumerable.Empty<string>());
+
+            var pinyinLibraryList = options.PinyinEnhanceOptions.LibraryList ??
+                                    Enumerable.Empty<EditorSelectOption>();
+            options.PinyinEnhanceOptions.LibraryScope = string.Join(",",
+                options.PinyinEnhanceOptions.LibraryScope
+                    ?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Where(v => pinyinLibraryList.Any(option => option.Value == v)) ??
+                Enumerable.Empty<string>());
 
             return base.OnOptionsSaving(options);
         }
@@ -559,6 +648,37 @@ namespace StrmAssistant
             }
             _currentMergeMultiVersion = options.ExperienceEnhanceOptions.MergeMultiVersion;
 
+            if (!suppress)
+            {
+                Logger.Info("EnablePinyinSearch is set to {0}", options.PinyinEnhanceOptions.EnablePinyinSearch);
+                Logger.Info("EnablePinyinSortName is set to {0}", options.PinyinEnhanceOptions.EnablePinyinSortName);
+                var pinyinLibraryScope = string.Join(", ",
+                    options.PinyinEnhanceOptions.LibraryScope
+                        ?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v => options.PinyinEnhanceOptions.LibraryList
+                            .FirstOrDefault(option => option.Value == v)
+                            ?.Name) ?? Enumerable.Empty<string>());
+                Logger.Info("Pinyin - LibraryScope is set to {0}",
+                    string.IsNullOrEmpty(pinyinLibraryScope) ? "ALL" : pinyinLibraryScope);
+            }
+
+            var pinyinSearch = options.PinyinEnhanceOptions.EnablePinyinSearch;
+            var pinyinSortName = options.PinyinEnhanceOptions.EnablePinyinSortName;
+            if (_currentPinyinSearch != pinyinSearch || _currentPinyinSortName != pinyinSortName)
+            {
+                _currentPinyinSearch = pinyinSearch;
+                _currentPinyinSortName = pinyinSortName;
+
+                if (pinyinSearch || pinyinSortName)
+                {
+                    _pinyinScheduler?.Start();
+                }
+                else
+                {
+                    _pinyinScheduler?.Stop();
+                }
+            }
+
             if (suppress) _currentSuppressOnOptionsSaved = false;
 
             base.OnOptionsSaved(options);
@@ -640,6 +760,7 @@ namespace StrmAssistant
             options.MediaInfoExtractOptions.LibraryList = list;
             options.IntroSkipOptions.LibraryList = listShow;
             options.IntroSkipOptions.MarkerEnabledLibraryList = listMarkerEnabled;
+            options.PinyinEnhanceOptions.LibraryList = list;
 
             var catchTaskList = new List<EditorSelectOption>();
             foreach (Enum item in Enum.GetValues(typeof(CatchupTask)))

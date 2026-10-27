@@ -21,7 +21,7 @@ namespace StrmAssistant.Common
         private readonly ILibraryManager _libraryManager;
         private readonly IItemRepository _itemRepository;
 
-        private const string MarkerSuffix = "#SA";
+        public const string MarkerSuffix = "#SA";
 
         public ChapterApi(ILibraryManager libraryManager, IItemRepository itemRepository)
         {

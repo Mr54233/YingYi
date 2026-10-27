@@ -1662,6 +1662,69 @@ namespace StrmAssistant.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pinyin Enhance.
+        /// </summary>
+        public static string PinyinEnhanceOptions_EditorTitle_Pinyin_Enhance {
+            get {
+                return ResourceManager.GetString("PinyinEnhanceOptions_EditorTitle_Pinyin_Enhance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Injects pinyin search tokens into the Emby search index so Chinese titles can be found by pinyin initials or full pinyin..
+        /// </summary>
+        public static string PinyinSearchTask_Description_Inject_pinyin_search_tokens_into_the_Emby_search_index {
+            get {
+                return ResourceManager.GetString("PinyinSearchTask_Description_Inject_pinyin_search_tokens_into_the_Emby_search_index", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Inject Pinyin Search Index.
+        /// </summary>
+        public static string PinyinSearchTask_Name_Pinyin_Search_Index {
+            get {
+                return ResourceManager.GetString("PinyinSearchTask_Name_Pinyin_Search_Index", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restores every original sort title from the backup table and then drops it..
+        /// </summary>
+        public static string PinyinSortNameRollbackTask_Description_Restore_original_sort_titles_and_drop_the_backup_table {
+            get {
+                return ResourceManager.GetString("PinyinSortNameRollbackTask_Description_Restore_original_sort_titles_and_drop_the_backup_table", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rollback Pinyin Sort Title.
+        /// </summary>
+        public static string PinyinSortNameRollbackTask_Name_Rollback_Pinyin_Sort_Title {
+            get {
+                return ResourceManager.GetString("PinyinSortNameRollbackTask_Name_Rollback_Pinyin_Sort_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generates pinyin initials and writes them as the sort title, keeping the original value in a backup table..
+        /// </summary>
+        public static string PinyinSortNameTask_Description_Generate_pinyin_initials_as_sort_title_and_back_up_the_original_value {
+            get {
+                return ResourceManager.GetString("PinyinSortNameTask_Description_Generate_pinyin_initials_as_sort_title_and_back_up_the_original_value", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generate Pinyin Sort Title.
+        /// </summary>
+        public static string PinyinSortNameTask_Name_Pinyin_Sort_Title {
+            get {
+                return ResourceManager.GetString("PinyinSortNameTask_Name_Pinyin_Sort_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Catch-up Mode.
         /// </summary>
         public static string PluginOptions_CatchupMode_Catch_up_Mode__Experimental_ {
@@ -2054,6 +2117,159 @@ namespace StrmAssistant.Properties {
         public static string Wiki_Link {
             get {
                 return ResourceManager.GetString("Wiki_Link", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CommunityIntroEnrichTask_Name_Community_Intro_En.
+        /// </summary>
+        public static string CommunityIntroEnrichTask_Name_Community_Intro_Enrichment {
+            get {
+                return ResourceManager.GetString("CommunityIntroEnrichTask_Name_Community_Intro_Enrichment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CommunityIntroEnrichTask_Description_Fills_missi.
+        /// </summary>
+        public static string CommunityIntroEnrichTask_Description_Fills_missing_intro_markers_from_community_database {
+            get {
+                return ResourceManager.GetString("CommunityIntroEnrichTask_Description_Fills_missing_intro_markers_from_community_database", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_EnableCommunityIntroSource_Comm.
+        /// </summary>
+        public static string IntroSkipOptions_EnableCommunityIntroSource_Community_Intro_Source {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_EnableCommunityIntroSource_Community_Intro_Source", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_EnableCommunityIntroSource_Fill.
+        /// </summary>
+        public static string IntroSkipOptions_EnableCommunityIntroSource_Fill_missing_intro_markers_from_community_database__Default_is_False_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_EnableCommunityIntroSource_Fill_missing_intro_markers_from_community_database__Default_is_False_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunityIntroSources_Community.
+        /// </summary>
+        public static string IntroSkipOptions_CommunityIntroSources_Community_Intro_Sources {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunityIntroSources_Community_Intro_Sources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunityIntroSources_Comma_sep.
+        /// </summary>
+        public static string IntroSkipOptions_CommunityIntroSources_Comma_separated_community_intro_sources__Default_is_IntroDb_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunityIntroSources_Comma_separated_community_intro_sources__Default_is_IntroDb_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceMinConfidence_Mi.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceMinConfidence_Minimum_Confidence {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceMinConfidence_Minimum_Confidence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceMinConfidence_Mi.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceMinConfidence_Minimum_confidence_threshold_0_1__Default_is_0_6_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceMinConfidence_Minimum_confidence_threshold_0_1__Default_is_0_6_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceRequestIntervalM.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceRequestIntervalMs_Request_Interval_Milliseconds {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceRequestIntervalMs_Request_Interval_Milliseconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceRequestIntervalM.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceRequestIntervalMs_Interval_between_community_source_requests__Default_is_1100_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceRequestIntervalMs_Interval_between_community_source_requests__Default_is_1100_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceTimeoutSeconds_R.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceTimeoutSeconds_Request_Timeout_Seconds {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceTimeoutSeconds_Request_Timeout_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceTimeoutSeconds_C.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceTimeoutSeconds_Community_source_request_timeout__Default_is_10_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceTimeoutSeconds_Community_source_request_timeout__Default_is_10_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceCacheDays_Negati.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceCacheDays_Negative_Result_Cache_Days {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceCacheDays_Negative_Result_Cache_Days", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceCacheDays_Cache_.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceCacheDays_Cache_days_for_no_intro_verdicts__Default_is_30_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceCacheDays_Cache_days_for_no_intro_verdicts__Default_is_30_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceRequireManualCon.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceRequireManualConfirm_Require_Manual_Confirm {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceRequireManualConfirm_Require_Manual_Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IntroSkipOptions_CommunitySourceRequireManualCon.
+        /// </summary>
+        public static string IntroSkipOptions_CommunitySourceRequireManualConfirm_Only_write_markers_after_manual_verification__Default_is_False_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_CommunitySourceRequireManualConfirm_Only_write_markers_after_manual_verification__Default_is_False_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to InvalidCommunityIntroSource.
+        /// </summary>
+        public static string InvalidCommunityIntroSource {
+            get {
+                return ResourceManager.GetString("InvalidCommunityIntroSource", resourceCulture);
             }
         }
     }

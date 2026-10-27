@@ -662,4 +662,76 @@
   <data name="ExclusiveControl_NoNfoSaverOptimization_No_Nfo_Saver_Optimization" xml:space="preserve">
     <value>无NFO保存优化</value>
   </data>
+  <data name="PinyinEnhanceOptions_EditorTitle_Pinyin_Enhance" xml:space="preserve">
+    <value>拼音增强</value>
+  </data>
+  <data name="PinyinSearchTask_Name_Pinyin_Search_Index" xml:space="preserve">
+    <value>注入拼音搜索索引</value>
+  </data>
+  <data name="PinyinSearchTask_Description_Inject_pinyin_search_tokens_into_the_Emby_search_index" xml:space="preserve">
+    <value>向 Emby 搜索索引注入拼音检索词，使中文标题可以用拼音首字母或全拼搜索到。</value>
+  </data>
+  <data name="PinyinSortNameTask_Name_Pinyin_Sort_Title" xml:space="preserve">
+    <value>生成拼音排序标题</value>
+  </data>
+  <data name="PinyinSortNameTask_Description_Generate_pinyin_initials_as_sort_title_and_back_up_the_original_value" xml:space="preserve">
+    <value>生成拼音首字母并写入排序标题，原值保存在备份表中。</value>
+  </data>
+  <data name="PinyinSortNameRollbackTask_Name_Rollback_Pinyin_Sort_Title" xml:space="preserve">
+    <value>还原拼音排序标题</value>
+  </data>
+  <data name="PinyinSortNameRollbackTask_Description_Restore_original_sort_titles_and_drop_the_backup_table" xml:space="preserve">
+    <value>从备份表还原全部原始排序标题，然后删除备份表。</value>
+  </data>
+  <data name="CommunityIntroEnrichTask_Name_Community_Intro_Enrichment" xml:space="preserve">
+    <value>社区片头数据补全</value>
+  </data>
+  <data name="CommunityIntroEnrichTask_Description_Fills_missing_intro_markers_from_community_database" xml:space="preserve">
+    <value>对本地声纹探测未检出片头的剧集，从社区片头数据库补全缺失的片头标记。</value>
+  </data>
+  <data name="IntroSkipOptions_EnableCommunityIntroSource_Community_Intro_Source" xml:space="preserve">
+    <value>社区片头源</value>
+  </data>
+  <data name="IntroSkipOptions_EnableCommunityIntroSource_Fill_missing_intro_markers_from_community_database__Default_is_False_" xml:space="preserve">
+    <value>对本地探测未检出片头的剧集，从社区片头数据库补全缺失的片头标记。默认关闭。</value>
+  </data>
+  <data name="IntroSkipOptions_CommunityIntroSources_Community_Intro_Sources" xml:space="preserve">
+    <value>社区片头数据源</value>
+  </data>
+  <data name="IntroSkipOptions_CommunityIntroSources_Comma_separated_community_intro_sources__Default_is_IntroDb_" xml:space="preserve">
+    <value>要查询的社区片头数据源。默认为 IntroDb。</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceMinConfidence_Minimum_Confidence" xml:space="preserve">
+    <value>最低置信度</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceMinConfidence_Minimum_confidence_threshold_0_1__Default_is_0_6_" xml:space="preserve">
+    <value>社区结果的最低置信度阈值，0 到 1 之间。默认为 0.6。</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequestIntervalMs_Request_Interval_Milliseconds" xml:space="preserve">
+    <value>请求间隔 (毫秒)</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequestIntervalMs_Interval_between_community_source_requests__Default_is_1100_" xml:space="preserve">
+    <value>社区数据源请求之间的间隔毫秒数。默认为 1100。</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceTimeoutSeconds_Request_Timeout_Seconds" xml:space="preserve">
+    <value>请求超时 (秒)</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceTimeoutSeconds_Community_source_request_timeout__Default_is_10_" xml:space="preserve">
+    <value>社区数据源请求超时秒数。默认为 10。</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceCacheDays_Negative_Result_Cache_Days" xml:space="preserve">
+    <value>否定结果缓存 (天)</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceCacheDays_Cache_days_for_no_intro_verdicts__Default_is_30_" xml:space="preserve">
+    <value>无片头结论的缓存天数，到期后重新查询。默认为 30。</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequireManualConfirm_Require_Manual_Confirm" xml:space="preserve">
+    <value>需要人工确认</value>
+  </data>
+  <data name="IntroSkipOptions_CommunitySourceRequireManualConfirm_Only_write_markers_after_manual_verification__Default_is_False_" xml:space="preserve">
+    <value>仅记录候选片头范围，人工确认后才写入标记。默认关闭。</value>
+  </data>
+  <data name="InvalidCommunityIntroSource" xml:space="preserve">
+    <value>启用社区片头源需要先解锁片头片尾探测增强。</value>
+  </data>
 </root>
