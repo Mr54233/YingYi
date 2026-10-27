@@ -32,35 +32,27 @@ namespace StrmAssistant.Common
 
         public bool HasIntro(BaseItem item)
         {
-            return _itemRepository.GetChapters(item.InternalId, new[] { MarkerType.IntroStart }).Any();
+            return ChapterQueryCompatibility.HasAny(_itemRepository, item, MarkerType.IntroStart);
         }
 
         public long? GetIntroStart(BaseItem item)
         {
-            var introStart = _itemRepository.GetChapters(item.InternalId, new[] { MarkerType.IntroStart })
-                .FirstOrDefault();
-
-            return introStart?.StartPositionTicks;
+            return ChapterQueryCompatibility.GetMarkerStart(_itemRepository, item, MarkerType.IntroStart);
         }
 
         public long? GetIntroEnd(BaseItem item)
         {
-            var introEnd = _itemRepository.GetChapters(item.InternalId, new[] { MarkerType.IntroEnd }).FirstOrDefault();
-
-            return introEnd?.StartPositionTicks;
+            return ChapterQueryCompatibility.GetMarkerStart(_itemRepository, item, MarkerType.IntroEnd);
         }
 
         public bool HasCredits(BaseItem item)
         {
-            return _itemRepository.GetChapters(item.InternalId, new[] { MarkerType.CreditsStart }).Any();
+            return ChapterQueryCompatibility.HasAny(_itemRepository, item, MarkerType.CreditsStart);
         }
 
         public long? GetCreditsStart(BaseItem item)
         {
-            var creditsStart = _itemRepository.GetChapters(item.InternalId, new[] { MarkerType.CreditsStart })
-                .FirstOrDefault();
-
-            return creditsStart?.StartPositionTicks;
+            return ChapterQueryCompatibility.GetMarkerStart(_itemRepository, item, MarkerType.CreditsStart);
         }
 
         public void UpdateIntro(Episode item, SessionInfo session, long introStartPositionTicks,

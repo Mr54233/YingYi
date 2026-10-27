@@ -31,5 +31,38 @@ namespace StrmAssistant.Common
 
             return null;
         }
+
+        /// <summary>
+        ///     Resolves a method by name and parameter-count only, requiring that each supplied
+        ///     concrete parameter type is assignable from the declared parameter type. Parameters
+        ///     whose expected type is unknown at compile time (e.g. Emby.Naming.NamingOptions)
+        ///     are passed as <c>null</c> and skipped in the comparison. Return type is not compared.
+        ///     Use when the target signature varies across Emby builds (4.8 / 4.9 / 4.10).
+        /// </summary>
+        public static MethodInfo FindByNameAndArity(Type targetType, string name, int parameterCount,
+            params Type[] knownParameterTypes)
+        {
+            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+
+            return targetType.GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                .FirstOrDefault(candidate =>
+                {
+                    if (candidate.Name != name) return false;
+                    var parameters = candidate.GetParameters();
+                    if (parameters.Length != parameterCount) return false;
+
+                    for (var i = 0; i < parameters.Length; i++)
+                    {
+                        var declared = parameters[i].ParameterType;
+                        var known = i < knownParameterTypes.Length ? knownParameterTypes[i] : null;
+                        if (known is null) continue; // unknown at compile time, accept as-is
+                        if (declared.IsAssignableFrom(known)) continue;
+                        return false;
+                    }
+
+                    return true;
+                });
+        }
     }
 }
