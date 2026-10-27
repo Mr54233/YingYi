@@ -61,4 +61,17 @@
     <Exec WorkingDirectory="$(_PluginOutDir)"
           Command="&quot;$(ILRepack)&quot; /out:&quot;$(_PluginOutFull)&quot; &quot;$(_TargetPathFull)&quot; &quot;$(_TargetDirFull)ChineseConverter.dll&quot; /lib:&quot;$(_TargetDirFull)&quot;" />
   </Target>
+  <!--
+    契约回归（refcheck）构建后置钩子。
+    默认不跑（每次构建都跑三个版本会拖慢；沙盒目录也可能不存在）。
+    手动开启：dotnet build StrmAssistant/StrmAssistant.csproj -p:RefCheckAfterBuild=true
+    原理：refcheck 审计插件 DLL 对 Emby 程序集的每个方法引用是否在目标版本真实存在，
+    能抓到「编译期没事、换 Emby 版本运行期才炸」的引用（如 4.9 改 GetChapters 签名）。
+    脚本与基线说明见 tools/scripts/refcheck-all.sh。
+  -->
+  <Target Name="RefCheckAfterBuild" AfterTargets="PostBuild" Condition="'$(RefCheckAfterBuild)' == 'true'">
+    <!-- 必须用相对路径：MSBuild 把含中文的绝对路径按 GBK 传给 msys bash 会乱码。
+         相对路径不含中文，bash 自己的 cwd 由 Windows API 设置（UTF-8 正常）。 -->
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="bash ../../../tools/scripts/refcheck-all.sh" ContinueOnError="true" />
+  </Target>
 </Project>
