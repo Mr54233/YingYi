@@ -44,7 +44,7 @@ namespace StrmAssistant.ScheduledTask
         }
 
         private static string PluginAssemblyFilename => Assembly.GetExecutingAssembly().GetName().Name + ".dll";
-        private static string RepoReleaseUrl => "https://api.github.com/repos/sjtuross/StrmAssistant/releases/latest";
+        private static string RepoReleaseUrl => "https://api.github.com/repos/Mr54233/YingYi/releases/latest";
 
         public string Key => "UpdatePluginTask";
 

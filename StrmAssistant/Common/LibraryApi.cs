@@ -652,7 +652,7 @@ namespace StrmAssistant.Common
             var filePath = taskItem.Path;
             if (taskItem.IsShortcut)
             {
-                filePath = await GetStrmMountPath(filePath).ConfigureAwait(false);
+                filePath = await GetStrmMountPath(filePath, cancellationToken).ConfigureAwait(false);
             }
 
             if (string.IsNullOrEmpty(filePath)) return null;
@@ -814,13 +814,13 @@ namespace StrmAssistant.Common
             return path != null && string.Equals(Path.GetExtension(path), ".strm", StringComparison.OrdinalIgnoreCase);
         }
 
-        public async Task<string> GetStrmMountPath(string strmPath)
+        public async Task<string> GetStrmMountPath(string strmPath, CancellationToken cancellationToken)
         {
-            var path = strmPath.AsMemory();
+            using var mediaMount = await MediaMountCompatibility
+                .MountAsync(_mediaMountManager, strmPath, cancellationToken)
+                .ConfigureAwait(false);
 
-            using var mediaMount = await _mediaMountManager.Mount(path, null, CancellationToken.None);
-            
-            return mediaMount?.MountedPath;
+            return MediaMountCompatibility.GetMountedPath(mediaMount);
         }
 
         public BaseItem[] GetItemsByIds(long[] itemIds)

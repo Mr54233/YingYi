@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
-    <AssemblyVersion>2.0.0.27</AssemblyVersion>
-    <FileVersion>2.0.0.27</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <CopyLocalLockFileAssemblies>True</CopyLocalLockFileAssemblies>
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
-    <AssemblyName>$(MSBuildProjectName)Lite</AssemblyName>
+    <AssemblyName>YingYi</AssemblyName>
+    <PluginOutputPath Condition="'$(PluginOutputPath)' == ''">$(MSBuildProjectDirectory)/../artifacts/$(AssemblyName).dll</PluginOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Web\Resources\shortcuts.js" />
@@ -50,6 +51,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(ILRepack) /out:%25AppData%25\Emby-Server\programdata\plugins\$(TargetFileName) $(TargetPath) $(TargetDir)ChineseConverter.dll /lib:$(TargetDir)" />
+    <PropertyGroup>
+      <_PluginOutFull>$([System.IO.Path]::GetFullPath('$(PluginOutputPath)'))</_PluginOutFull>
+      <_PluginOutDir>$([System.IO.Path]::GetDirectoryName('$(_PluginOutFull)'))</_PluginOutDir>
+      <_TargetPathFull>$([System.IO.Path]::GetFullPath('$(TargetPath)'))</_TargetPathFull>
+      <_TargetDirFull>$([System.IO.Path]::GetFullPath('$(TargetDir)'))</_TargetDirFull>
+    </PropertyGroup>
+    <MakeDir Directories="$(_PluginOutDir)" />
+    <Exec WorkingDirectory="$(_PluginOutDir)"
+          Command="&quot;$(ILRepack)&quot; /out:&quot;$(_PluginOutFull)&quot; &quot;$(_TargetPathFull)&quot; &quot;$(_TargetDirFull)ChineseConverter.dll&quot; /lib:&quot;$(_TargetDirFull)&quot;" />
   </Target>
 </Project>

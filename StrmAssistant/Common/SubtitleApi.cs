@@ -3,6 +3,7 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.MediaEncoding;
 using MediaBrowser.Controller.Persistence;
 using MediaBrowser.Controller.Providers;
+using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Globalization;
 using MediaBrowser.Model.IO;
@@ -44,7 +45,8 @@ namespace StrmAssistant.Common
             try
             {
                 var embyProviders = Assembly.Load("Emby.Providers");
-                var subtitleResolverType = embyProviders.GetType("Emby.Providers.MediaInfo.SubtitleResolver");
+                var subtitleResolverType = embyProviders.GetType("Emby.Providers.MediaInfo.SubtitleResolver") ??
+                                           throw new TypeLoadException("Emby.Providers.MediaInfo.SubtitleResolver");
                 var subtitleResolverConstructor = subtitleResolverType.GetConstructor(new[]
                 {
                     typeof(ILocalizationManager), typeof(IFileSystem), typeof(ILibraryManager)
@@ -53,15 +55,39 @@ namespace StrmAssistant.Common
                 {
                     localizationManager, fileSystem, libraryManager
                 });
-                _getExternalSubtitleStreams = subtitleResolverType.GetMethod("GetExternalSubtitleStreams");
 
-                var ffProbeSubtitleInfoType = embyProviders.GetType("Emby.Providers.MediaInfo.FFProbeSubtitleInfo");
+                var namingOptionsType = libraryManager.GetNamingOptions()?.GetType() ??
+                                        throw new TypeLoadException("Emby naming options type");
+                _getExternalSubtitleStreams = ReflectionMethodResolver.FindExactMethod(
+                    subtitleResolverType,
+                    new[] { "GetExternalSubtitleStreams", "GetExternalTracks" },
+                    typeof(List<MediaStream>),
+                    new[]
+                    {
+                        typeof(BaseItem), typeof(int), typeof(IDirectoryService), typeof(LibraryOptions),
+                        namingOptionsType, typeof(bool)
+                    },
+                    new[]
+                    {
+                        typeof(BaseItem), typeof(int), typeof(IDirectoryService), namingOptionsType, typeof(bool)
+                    });
+
+                var ffProbeSubtitleInfoType = embyProviders.GetType("Emby.Providers.MediaInfo.FFProbeSubtitleInfo") ??
+                                              throw new TypeLoadException("Emby.Providers.MediaInfo.FFProbeSubtitleInfo");
                 var ffProbeSubtitleInfoConstructor = ffProbeSubtitleInfoType.GetConstructor(new[]
                 {
                     typeof(IMediaProbeManager)
                 });
                 _ffProbeSubtitleInfo = ffProbeSubtitleInfoConstructor?.Invoke(new object[] { mediaProbeManager });
-                _updateExternalSubtitleStream = ffProbeSubtitleInfoType.GetMethod("UpdateExternalSubtitleStream");
+                _updateExternalSubtitleStream = ReflectionMethodResolver.FindExactMethod(
+                    ffProbeSubtitleInfoType,
+                    new[] { "UpdateExternalSubtitleStream" },
+                    typeof(Task<bool>),
+                    new[]
+                    {
+                        typeof(BaseItem), typeof(MediaStream), typeof(MetadataRefreshOptions), typeof(LibraryOptions),
+                        typeof(CancellationToken)
+                    });
             }
             catch (Exception e)
             {
@@ -75,22 +101,45 @@ namespace StrmAssistant.Common
             if (_subtitleResolver is null || _getExternalSubtitleStreams is null ||
                 _ffProbeSubtitleInfo is null || _updateExternalSubtitleStream is null)
             {
-                _logger.Warn($"{nameof(SubtitleApi)} Init Failed");
+                _logger.Warn($"{nameof(SubtitleApi)} Init Failed - no supported exact Emby subtitle API contract found");
             }
         }
 
         private List<MediaStream> GetExternalSubtitleStreams(BaseItem item, int startIndex,
             IDirectoryService directoryService, bool clearCache)
         {
-            var namingOptions = _libraryManager.GetNamingOptions();
+            if (_getExternalSubtitleStreams is null)
+                throw new MissingMethodException("No supported external subtitle resolver signature was found");
 
-            return (List<MediaStream>)_getExternalSubtitleStreams.Invoke(_subtitleResolver,
-                new object[] { item, startIndex, directoryService, namingOptions, clearCache });
+            var namingOptions = _libraryManager.GetNamingOptions();
+            var parameters = _getExternalSubtitleStreams.GetParameters();
+
+            if (parameters.Length == 6)
+            {
+                return (List<MediaStream>)_getExternalSubtitleStreams.Invoke(_subtitleResolver,
+                    new object[]
+                    {
+                        item, startIndex, directoryService, _libraryManager.GetLibraryOptions(item), namingOptions,
+                        clearCache
+                    });
+            }
+
+            if (parameters.Length == 5)
+            {
+                return (List<MediaStream>)_getExternalSubtitleStreams.Invoke(_subtitleResolver,
+                    new object[] { item, startIndex, directoryService, namingOptions, clearCache });
+            }
+
+            throw new NotSupportedException($"Unsupported external subtitle resolver signature: " +
+                                            _getExternalSubtitleStreams);
         }
 
         private Task<bool> UpdateExternalSubtitleStream(BaseItem item,
             MediaStream subtitleStream, MetadataRefreshOptions options, CancellationToken cancellationToken)
         {
+            if (_updateExternalSubtitleStream is null)
+                throw new MissingMethodException("No supported external subtitle update signature was found");
+
             var libraryOptions = _libraryManager.GetLibraryOptions(item);
 
             return (Task<bool>)_updateExternalSubtitleStream.Invoke(_ffProbeSubtitleInfo,
@@ -113,24 +162,19 @@ namespace StrmAssistant.Common
 
         public bool HasExternalSubtitleChanged(BaseItem item, IDirectoryService directoryService, bool clearCache)
         {
-            var currentExternalSubtitleFiles = _libraryManager.GetExternalSubtitleFiles(item.InternalId);
+            var currentExternalSubtitleFiles = item.GetMediaStreams()
+                .Where(i => i.IsExternal && i.Type == MediaStreamType.Subtitle &&
+                            i.Protocol == MediaProtocol.File && !string.IsNullOrEmpty(i.Path))
+                .Select(i => i.Path)
+                .ToList();
             var currentSet = new HashSet<string>(currentExternalSubtitleFiles, StringComparer.Ordinal);
 
-            try
-            {
-                var newExternalSubtitleFiles = GetExternalSubtitleStreams(item, 0, directoryService, clearCache)
-                    .Select(i => i.Path)
-                    .ToArray();
-                var newSet = new HashSet<string>(newExternalSubtitleFiles, StringComparer.Ordinal);
+            var newExternalSubtitleFiles = GetExternalSubtitleStreams(item, 0, directoryService, clearCache)
+                .Select(i => i.Path)
+                .ToArray();
+            var newSet = new HashSet<string>(newExternalSubtitleFiles, StringComparer.Ordinal);
 
-                return !currentSet.SetEquals(newSet);
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return false;
+            return !currentSet.SetEquals(newSet);
         }
 
         public async Task UpdateExternalSubtitles(BaseItem item, MetadataRefreshOptions refreshOptions, bool clearCache,

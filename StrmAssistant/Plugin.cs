@@ -63,7 +63,7 @@ namespace StrmAssistant
         public static MetadataApi MetadataApi { get; private set; }
         public static VideoThumbnailApi VideoThumbnailApi { get; private set; }
 
-        private readonly Guid _id = new Guid("63c322b7-a371-41a3-b11f-04f8418b37d8");
+        private readonly Guid _id = new Guid("c2f53351-7269-4c07-8a41-8310650a9cbc");
 
         public readonly ILogger Logger;
         public readonly IApplicationHost ApplicationHost;
@@ -331,15 +331,15 @@ namespace StrmAssistant
 
         public ImageFormat ThumbImageFormat => ImageFormat.Png;
 
-        public override string Description => "Extract MediaInfo and Enable IntroSkip";
+        public override string Description => "影医 — STRM 媒体库诊疗与增强";
 
         public override Guid Id => _id;
 
-        public sealed override string Name => "Strm Assistant";
+        public sealed override string Name => "影医";
 
         public string CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
 
-        public string UserAgent => $"{Name}/{CurrentVersion}";
+        public string UserAgent => $"YingYi/{CurrentVersion}";
 
         public CultureInfo DefaultUICulture => new CultureInfo("zh-CN");
 
@@ -573,7 +573,7 @@ namespace StrmAssistant
                     PrimaryText = Resources.DisclaimerButtonText,
                     Icon = IconNames.privacy_tip,
                     IconMode = ItemListIconMode.SmallRegular,
-                    HyperLink = "https://github.com/sjtuross/StrmAssistant#%E5%A3%B0%E6%98%8E"
+                    HyperLink = "https://github.com/Mr54233/YingYi#声明"
                 });
 
             if (options.ShowConflictPluginLoadedStatus)
@@ -728,7 +728,7 @@ namespace StrmAssistant
                     PrimaryText = Resources.Repo_Link,
                     Icon = IconNames.code,
                     IconMode = ItemListIconMode.SmallRegular,
-                    HyperLink = "https://github.com/sjtuross/StrmAssistant",
+                    HyperLink = "https://github.com/Mr54233/YingYi",
                 });
 
             options.AboutOptions.VersionInfoList.Add(
@@ -737,7 +737,7 @@ namespace StrmAssistant
                     PrimaryText = Resources.Wiki_Link,
                     Icon = IconNames.menu_book,
                     IconMode = ItemListIconMode.SmallRegular,
-                    HyperLink = "https://github.com/sjtuross/StrmAssistant/wiki",
+                    HyperLink = "https://github.com/Mr54233/YingYi#readme",
                 });
 
             var allUsers = LibraryApi.AllUsers;

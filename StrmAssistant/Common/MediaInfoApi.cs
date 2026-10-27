@@ -31,6 +31,7 @@ namespace StrmAssistant.Common
         private readonly IJsonSerializer _jsonSerializer;
         private readonly IFileSystem _fileSystem;
         private readonly IProviderManager _providerManager;
+        private readonly ILibraryMonitor _libraryMonitor;
 
         private const string MediaInfoFileExtension = "-mediainfo.json";
 
@@ -56,18 +57,32 @@ namespace StrmAssistant.Common
             _mediaSourceManager = mediaSourceManager;
             _itemRepository = itemRepository;
             _jsonSerializer = jsonSerializer;
+            _libraryMonitor = libraryMonitor;
 
             if (Plugin.Instance.ApplicationHost.ApplicationVersion >= new Version("4.9.0.25"))
             {
                 try
                 {
-                    _getStaticMediaSources = mediaSourceManager.GetType()
-                        .GetMethod("GetStaticMediaSources",
-                            new[]
-                            {
-                                typeof(BaseItem), typeof(bool), typeof(bool), typeof(bool), typeof(LibraryOptions),
-                                typeof(DeviceProfile), typeof(User)
-                            });
+                    _getStaticMediaSources = ReflectionMethodResolver.FindExactMethod(
+                        mediaSourceManager.GetType(),
+                        new[] { "GetStaticMediaSources" },
+                        typeof(List<MediaSourceInfo>),
+                        new[]
+                        {
+                            typeof(BaseItem), typeof(bool), typeof(bool), typeof(bool), typeof(bool),
+                            typeof(BaseItem[]), typeof(LibraryOptions), typeof(DeviceProfile), typeof(User),
+                            typeof(CancellationToken)
+                        },
+                        new[]
+                        {
+                            typeof(BaseItem), typeof(bool), typeof(bool), typeof(bool), typeof(BaseItem[]),
+                            typeof(LibraryOptions), typeof(DeviceProfile), typeof(User)
+                        },
+                        new[]
+                        {
+                            typeof(BaseItem), typeof(bool), typeof(bool), typeof(bool), typeof(LibraryOptions),
+                            typeof(DeviceProfile), typeof(User)
+                        });
                     _fallbackApproach = true;
                 }
                 catch (Exception e)
@@ -81,33 +96,10 @@ namespace StrmAssistant.Common
 
                 if (_getStaticMediaSources is null)
                 {
-                    _logger.Warn($"{nameof(MediaInfoApi)} Init Failed");
+                    _logger.Warn($"{nameof(MediaInfoApi)} Init Failed - no supported exact GetStaticMediaSources contract found");
                 }
             }
 
-            try
-            {
-                var embyServerImplementationsAssembly = Assembly.Load("Emby.Server.Implementations");
-                var libraryMonitorImpl =
-                    embyServerImplementationsAssembly.GetType("Emby.Server.Implementations.IO.LibraryMonitor");
-                var alwaysIgnoreExtensions = libraryMonitorImpl.GetField("_alwaysIgnoreExtensions",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-                var currentArray = (string[])alwaysIgnoreExtensions.GetValue(libraryMonitor);
-                var newArray = new string[currentArray.Length + 1];
-                Array.Copy(currentArray, newArray, currentArray.Length);
-                newArray[newArray.Length - 1] = ".json";
-                alwaysIgnoreExtensions.SetValue(libraryMonitor, newArray);
-            }
-            catch (Exception e)
-            {
-                if (Plugin.Instance.DebugMode)
-                {
-                    _logger.Debug(e.Message);
-                    _logger.Debug(e.StackTrace);
-                }
-
-                _logger.Warn($"{nameof(MediaInfoApi)} Init Failed");
-            }
         }
 
         private List<MediaSourceInfo> GetStaticMediaSourcesByApi(BaseItem item, bool enableAlternateMediaSources,
@@ -120,8 +112,39 @@ namespace StrmAssistant.Common
         private List<MediaSourceInfo> GetStaticMediaSourcesByRef(BaseItem item, bool enableAlternateMediaSources,
             LibraryOptions libraryOptions)
         {
-            return (List<MediaSourceInfo>)_getStaticMediaSources.Invoke(_mediaSourceManager,
-                new object[] { item, enableAlternateMediaSources, false, false, libraryOptions, null, null });
+            if (_getStaticMediaSources is null)
+            {
+                throw new MissingMethodException(_mediaSourceManager.GetType().FullName,
+                    "Supported exact GetStaticMediaSources overload (10, 8, or 7 parameter contract)");
+            }
+
+            var collectionFolders = _libraryManager.GetCollectionFolders(item).Cast<BaseItem>().ToArray();
+            object[] args;
+
+            switch (_getStaticMediaSources.GetParameters().Length)
+            {
+                case 10:
+                    args = new object[]
+                    {
+                        item, enableAlternateMediaSources, false, true, true, collectionFolders, libraryOptions, null,
+                        null, CancellationToken.None
+                    };
+                    break;
+                case 8:
+                    args = new object[]
+                    {
+                        item, enableAlternateMediaSources, false, true, collectionFolders, libraryOptions, null, null
+                    };
+                    break;
+                case 7:
+                    args = new object[] { item, enableAlternateMediaSources, false, true, libraryOptions, null, null };
+                    break;
+                default:
+                    throw new NotSupportedException(
+                        $"Unsupported GetStaticMediaSources signature: {_getStaticMediaSources}");
+            }
+
+            return (List<MediaSourceInfo>)_getStaticMediaSources.Invoke(_mediaSourceManager, args);
         }
 
         public List<MediaSourceInfo> GetStaticMediaSources(BaseItem item, bool enableAlternateMediaSources)
@@ -165,8 +188,14 @@ namespace StrmAssistant.Common
             return mediaInfoJsonPath;
         }
 
+        public bool MediaInfoJsonExists(BaseItem item, IDirectoryService directoryService)
+        {
+            var mediaInfoJsonPath = GetMediaInfoJsonPath(item);
+            return directoryService.GetFile(mediaInfoJsonPath)?.Exists == true;
+        }
+
         private async Task<bool> SerializeMediaInfo(BaseItem item, IDirectoryService directoryService, bool overwrite,
-            string source)
+            string source, bool throwOnError)
         {
             var mediaInfoJsonPath = GetMediaInfoJsonPath(item);
             var file = directoryService.GetFile(mediaInfoJsonPath);
@@ -227,7 +256,8 @@ namespace StrmAssistant.Common
                         Directory.CreateDirectory(parentDirectory);
                     }
 
-                    _jsonSerializer.SerializeToFile(mediaSourcesWithChapters, mediaInfoJsonPath);
+                    MutateMediaInfoJson(mediaInfoJsonPath,
+                        () => _jsonSerializer.SerializeToFile(mediaSourcesWithChapters, mediaInfoJsonPath));
 
                     _logger.Info("MediaInfoPersist - Serialization Success (" + source + "): " + mediaInfoJsonPath);
 
@@ -238,14 +268,15 @@ namespace StrmAssistant.Common
                     _logger.Error("MediaInfoPersist - Serialization Failed (" + source + "): " + mediaInfoJsonPath);
                     _logger.Error(e.Message);
                     _logger.Debug(e.StackTrace);
+                    if (throwOnError) throw;
                 }
             }
 
             return false;
         }
 
-        public async Task<bool> SerializeMediaInfo(long itemId, IDirectoryService directoryService, bool overwrite,
-            string source)
+        private async Task<bool> SerializeMediaInfo(long itemId, IDirectoryService directoryService, bool overwrite,
+            string source, bool throwOnError)
         {
             var workItem = _libraryManager.GetItemById(itemId);
 
@@ -259,7 +290,19 @@ namespace StrmAssistant.Common
 
             var ds = directoryService ?? new DirectoryService(_logger, _fileSystem);
 
-            return await SerializeMediaInfo(workItem, ds, overwrite, source).ConfigureAwait(false);
+            return await SerializeMediaInfo(workItem, ds, overwrite, source, throwOnError).ConfigureAwait(false);
+        }
+
+        public Task<bool> SerializeMediaInfo(long itemId, IDirectoryService directoryService, bool overwrite,
+            string source)
+        {
+            return SerializeMediaInfo(itemId, directoryService, overwrite, source, false);
+        }
+
+        public Task<bool> SerializeMediaInfoOrThrow(long itemId, IDirectoryService directoryService, bool overwrite,
+            string source)
+        {
+            return SerializeMediaInfo(itemId, directoryService, overwrite, source, true);
         }
 
         public async Task<bool> DeserializeMediaInfo(BaseItem item, IDirectoryService directoryService, string source,
@@ -369,7 +412,7 @@ namespace StrmAssistant.Common
                 try
                 {
                     _logger.Info($"MediaInfoPersist - Attempting to delete ({source}): {mediaInfoJsonPath}");
-                    _fileSystem.DeleteFile(mediaInfoJsonPath);
+                    MutateMediaInfoJson(mediaInfoJsonPath, () => _fileSystem.DeleteFile(mediaInfoJsonPath));
 
                     var jsonRoot = Plugin.Instance.GetPluginOptions().MediaInfoExtractOptions.MediaInfoJsonRootFolder;
 
@@ -396,6 +439,19 @@ namespace StrmAssistant.Common
                     _logger.Error(e.Message);
                     _logger.Debug(e.StackTrace);
                 }
+            }
+        }
+
+        private void MutateMediaInfoJson(string path, Action mutation)
+        {
+            _libraryMonitor.ReportFileSystemChangeBeginning(path);
+            try
+            {
+                mutation();
+            }
+            finally
+            {
+                _libraryMonitor.ReportFileSystemChangeComplete(path, false);
             }
         }
 
