@@ -64,29 +64,26 @@ namespace StrmAssistant.ScheduledTask
                 return;
             }
 
-            await Task.Run(() =>
+            try
             {
-                try
-                {
-                    ExecuteInternal(options, cancellationToken, progress);
-                }
-                catch (OperationCanceledException)
-                {
-                    _logger.Info("CommunityIntro - Cancelled");
-                }
-                catch (Exception e)
-                {
-                    _logger.Error("CommunityIntro - Task failed: {0}", e.Message);
-                    _logger.Debug(e.StackTrace);
-                }
-                finally
-                {
-                    progress.Report(100);
-                }
-            }, cancellationToken).ConfigureAwait(false);
+                await ExecuteInternalAsync(options, cancellationToken, progress).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.Info("CommunityIntro - Cancelled");
+            }
+            catch (Exception e)
+            {
+                _logger.Error("CommunityIntro - Task failed: {0}", e.Message);
+                _logger.Debug(e.StackTrace);
+            }
+            finally
+            {
+                progress.Report(100);
+            }
         }
 
-        private void ExecuteInternal(IntroSkipOptions options, CancellationToken cancellationToken,
+        private async Task ExecuteInternalAsync(IntroSkipOptions options, CancellationToken cancellationToken,
             IProgress<double> progress)
         {
             var sources = options.CommunityIntroSources?
@@ -140,9 +137,9 @@ namespace StrmAssistant.ScheduledTask
                     }
                     else
                     {
-                        var result = _communityIntroSource.Lookup(episode, enableIntroDb, enableTheIntroDb,
+                        var result = await _communityIntroSource.LookupAsync(episode, enableIntroDb, enableTheIntroDb,
                             options.CommunitySourceTimeoutSeconds, options.CommunitySourceMinConfidence,
-                            cancellationToken);
+                            cancellationToken).ConfigureAwait(false);
 
                         var hasIntro = result != null && result.IntroStartTicks != null &&
                                        result.IntroEndTicks != null;
@@ -175,6 +172,11 @@ namespace StrmAssistant.ScheduledTask
                             skipped++;
                         }
                     }
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.Info("CommunityIntro - Cancelled");
+                    break;
                 }
                 catch (Exception e)
                 {

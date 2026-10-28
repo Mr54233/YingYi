@@ -67,6 +67,7 @@ namespace StrmAssistant.IntroSkip
         private readonly IItemRepository _itemRepository;
 
         private static readonly object SyncRoot = new object();
+
         private static long _lastRequestTicks;
         private CommunityIntroCacheFile _cache;
         private bool _cacheLoaded;
@@ -187,22 +188,26 @@ namespace StrmAssistant.IntroSkip
         /// <summary>
         /// Look up community intro data for one episode across enabled sources.
         /// Returns null when no source produced usable data (all failures swallowed).
+        /// Fully async: Emby's IHttpClient.SendAsync must be awaited on this server generation
+        /// (sync-over-async blocks forever inside a scheduled task on 4.9/.NET 8).
         /// </summary>
-        public CommunityIntroResult Lookup(Episode episode, bool enableIntroDb, bool enableTheIntroDb,
+        public async Task<CommunityIntroResult> LookupAsync(Episode episode, bool enableIntroDb, bool enableTheIntroDb,
             int timeoutSeconds, double minConfidence, CancellationToken cancellationToken)
         {
-            var result = TryIntroDb(episode, enableIntroDb, timeoutSeconds, minConfidence, cancellationToken);
+            var result = await TryIntroDbAsync(episode, enableIntroDb, timeoutSeconds, minConfidence,
+                cancellationToken).ConfigureAwait(false);
 
             if (result == null && enableTheIntroDb)
             {
-                result = TryTheIntroDb(episode, timeoutSeconds, minConfidence, cancellationToken);
+                result = await TryTheIntroDbAsync(episode, timeoutSeconds, minConfidence,
+                    cancellationToken).ConfigureAwait(false);
             }
 
             return result;
         }
 
-        private CommunityIntroResult TryIntroDb(Episode episode, bool enabled, int timeoutSeconds, double minConfidence,
-            CancellationToken cancellationToken)
+        private async Task<CommunityIntroResult> TryIntroDbAsync(Episode episode, bool enabled, int timeoutSeconds,
+            double minConfidence, CancellationToken cancellationToken)
         {
             if (!enabled)
             {
@@ -225,7 +230,8 @@ namespace StrmAssistant.IntroSkip
             var url = $"{IntroDbBaseUrl}/segments?imdb_id={Uri.EscapeDataString(imdb)}" +
                       $"&season={episode.ParentIndexNumber}&episode={episode.IndexNumber}";
 
-            var response = GetJson<IntroDbSegmentsResponse>(url, timeoutSeconds, cancellationToken);
+            var response = await GetJsonAsync<IntroDbSegmentsResponse>(url, timeoutSeconds,
+                cancellationToken).ConfigureAwait(false);
             if (response == null)
             {
                 return null;
@@ -287,8 +293,8 @@ namespace StrmAssistant.IntroSkip
             return null;
         }
 
-        private CommunityIntroResult TryTheIntroDb(Episode episode, int timeoutSeconds, double minConfidence,
-            CancellationToken cancellationToken)
+        private async Task<CommunityIntroResult> TryTheIntroDbAsync(Episode episode, int timeoutSeconds,
+            double minConfidence, CancellationToken cancellationToken)
         {
             if (episode.ParentIndexNumber == null || episode.IndexNumber == null)
             {
@@ -316,7 +322,8 @@ namespace StrmAssistant.IntroSkip
                       $"&season={episode.ParentIndexNumber}&episode={episode.IndexNumber}";
             }
 
-            var response = GetJson<TheIntroDbMediaResponse>(url, timeoutSeconds, cancellationToken);
+            var response = await GetJsonAsync<TheIntroDbMediaResponse>(url, timeoutSeconds,
+                cancellationToken).ConfigureAwait(false);
             if (response == null)
             {
                 return null;
@@ -375,12 +382,16 @@ namespace StrmAssistant.IntroSkip
         /// <summary>
         /// HTTP GET returning deserialized JSON, or null on any failure (non-200, timeout, parse error).
         /// Timeout enforced via CancellationTokenSource, never HttpRequestOptions.TimeoutMs.
+        /// Async end to end: blocking on SendAsync deadlocks inside scheduled tasks on 4.9/.NET 8.
         /// </summary>
-        private T GetJson<T>(string url, int timeoutSeconds, CancellationToken cancellationToken) where T : class
+        private async Task<T> GetJsonAsync<T>(string url, int timeoutSeconds, CancellationToken cancellationToken)
+            where T : class
         {
             try
             {
-                Throttle(Plugin.Instance.GetPluginOptions().IntroSkipOptions.CommunitySourceRequestIntervalMs);
+                var intervalMs = Plugin.Instance.GetPluginOptions().IntroSkipOptions
+                    .CommunitySourceRequestIntervalMs;
+                await ThrottleAsync(intervalMs).ConfigureAwait(false);
 
                 using (var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
                 {
@@ -396,7 +407,7 @@ namespace StrmAssistant.IntroSkip
                         EnableDefaultUserAgent = false
                     };
 
-                    using (var response = _httpClient.SendAsync(options, "GET").GetAwaiter().GetResult())
+                    using (var response = await _httpClient.SendAsync(options, "GET").ConfigureAwait(false))
                     {
                         if (response.StatusCode != HttpStatusCode.OK)
                         {
@@ -419,25 +430,51 @@ namespace StrmAssistant.IntroSkip
         }
 
         /// <summary>
-        /// Simple static rate limiter shared across source clients (metadata-api pattern).
+        /// Simple static async rate limiter shared across source clients (metadata-api pattern).
+        /// Task.Delay is fine here: whole call chain is async now; the no-Task.Delay rule
+        /// applied to the old synchronous task body this class no longer runs on.
         /// </summary>
-        private static void Throttle(int intervalMs)
+        private static async Task ThrottleAsync(int intervalMs)
         {
             if (intervalMs <= 0)
             {
                 return;
             }
 
+            int waitMs;
             lock (SyncRoot)
             {
-                var elapsed = DateTimeOffset.UtcNow.Ticks - _lastRequestTicks;
-                var waitMs = intervalMs - (int)(elapsed / TimeSpan.TicksPerMillisecond);
-                if (waitMs > 0)
+                var now = DateTimeOffset.UtcNow.Ticks;
+
+                // _lastRequestTicks starts at 0, so "now - last" is ~6.4e13 ticks (the whole
+                // Unix-epoch-to-now span), i.e. ~6.4e13 ms, which overflows int into a negative
+                // number and turns waitMs into a ~+1.8e9 ms delay (about 21 days). A positive
+                // sentinel check prevents that astronomically long first Task.Delay.
+                if (_lastRequestTicks <= 0)
                 {
-                    Thread.Sleep(waitMs);
+                    waitMs = 0;
+                }
+                else
+                {
+                    var elapsedMs = (now - _lastRequestTicks) / TimeSpan.TicksPerMillisecond;
+                    // clamp before the int cast: elapsed is never legitimately more than a day here
+                    if (elapsedMs >= intervalMs)
+                    {
+                        waitMs = 0;
+                    }
+                    else
+                    {
+                        var remaining = (int)Math.Max(0, intervalMs - elapsedMs);
+                        waitMs = Math.Min(remaining, intervalMs);
+                    }
                 }
 
-                _lastRequestTicks = DateTimeOffset.UtcNow.Ticks;
+                _lastRequestTicks = now;
+            }
+
+            if (waitMs > 0)
+            {
+                await Task.Delay(waitMs).ConfigureAwait(false);
             }
         }
 
@@ -582,8 +619,14 @@ namespace StrmAssistant.IntroSkip
                 {
                     var durationTicks = result.IntroEndTicks.Value - result.IntroStartTicks.Value;
                     var runtime = episode.RunTimeTicks;
-                    if (runtime.HasValue && durationTicks >= 5 * TimeSpan.TicksPerSecond &&
-                        durationTicks <= 180 * TimeSpan.TicksPerSecond && result.IntroEndTicks.Value < runtime.Value)
+
+                    // Runtime is unknown for .strm items and for anything Emby has not probed yet.
+                    // Backing off on a missing runtime would mean community markers never land on
+                    // exactly the library type this feature targets, so the duration window alone
+                    // decides when runtime is unavailable; it still bounds every accepted segment.
+                    var withinRuntime = !runtime.HasValue || result.IntroEndTicks.Value < runtime.Value;
+                    if (durationTicks >= 5 * TimeSpan.TicksPerSecond &&
+                        durationTicks <= 180 * TimeSpan.TicksPerSecond && withinRuntime)
                     {
                         if (!hasIntro)
                         {
