@@ -2,6 +2,7 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Configuration;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Services;
+using MediaBrowser.Controller.Entities;
 using StrmAssistant.Common;
 using StrmAssistant.Web.Api;
 using System;
@@ -23,7 +24,24 @@ namespace StrmAssistant.Web.Service
 
         public void Post(CopyVirtualFolder request)
         {
-            var sourceLibrary = _libraryManager.GetItemById(request.Id);
+            BaseItem sourceLibrary;
+
+            try
+            {
+                sourceLibrary = _libraryManager.GetItemById(request.Id);
+            }
+            catch (Exception e)
+            {
+                // GetItemById throws (e.g. "Unrecognized Guid format") for a malformed Id.
+                // Surface it as a client error instead of letting it become a 500.
+                throw new ArgumentException("Invalid library id: " + request.Id, nameof(request.Id), e);
+            }
+
+            if (sourceLibrary == null)
+            {
+                throw new ArgumentException("Library not found: " + request.Id, nameof(request.Id));
+            }
+
             var sourceOptions = _libraryManager.GetLibraryOptions(sourceLibrary);
 
             var targetOptions = LibraryApi.CopyLibraryOptions(sourceOptions);

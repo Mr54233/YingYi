@@ -1,7 +1,8 @@
-﻿using MediaBrowser.Controller.Api;
+using MediaBrowser.Controller.Api;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 using StrmAssistant.Web.Api;
+using System;
 
 namespace StrmAssistant.Web.Service
 {
@@ -17,6 +18,11 @@ namespace StrmAssistant.Web.Service
         public void Post(LockItem request)
         {
             var itemById = _libraryManager.GetItemById(request.ItemId);
+
+            if (itemById == null)
+            {
+                throw new ArgumentException("Item not found: " + request.ItemId, nameof(request.ItemId));
+            }
 
             var items = _libraryManager.GetItemList(new InternalItemsQuery
             {
