@@ -115,18 +115,59 @@ namespace StrmAssistant.Common
             return CreateTitleFingerprint(item, directoryService, cancellationToken);
         }
 
-        private Task<object> GetAllFingerprintFilesForSeason(Season season, Episode[] episodes,
+        private async Task<object> GetAllFingerprintFilesForSeason(Season season, Episode[] episodes,
             LibraryOptions libraryOptions, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
-            return (Task<object>)_getAllFingerprintFilesForSeason.Invoke(_audioFingerprintManager,
+            // Emby 的 AudioFingerprintManager.GetAllFingerprintFilesForSeason 返回的是
+            // Task<Emby.Providers.Markers.SeasonFingerprintInfo>，而 Task<T> 不协变，
+            // 直接把反射结果强转成 Task<object> 会抛
+            // "Unable to cast object of type 'Task`1[SeasonFingerprintInfo]' to type 'Task`1[System.Object]'"
+            // （4.10.2.0 实测，指纹提取因此永远不会成功）。
+            // 这里只把它当非泛型 Task 等待，再用反射取 Result。
+            var fingerprintTask = _getAllFingerprintFilesForSeason.Invoke(_audioFingerprintManager,
                 new object[] { season, episodes, libraryOptions, directoryService, cancellationToken });
+
+            if (!(fingerprintTask is Task task))
+            {
+                throw new InvalidOperationException(
+                    "GetAllFingerprintFilesForSeason did not return a Task: " +
+                    (fingerprintTask?.GetType().FullName ?? "null"));
+            }
+
+            await task.ConfigureAwait(false);
+
+            return task.GetType().GetProperty("Result")?.GetValue(task);
         }
 
         private void UpdateSequencesForSeason(Season season, object seasonFingerprintInfo, Episode episode,
-            LibraryOptions libraryOptions, IDirectoryService directoryService)
+            LibraryOptions libraryOptions, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
-            _updateSequencesForSeason.Invoke(_audioFingerprintManager,
-                new[] { season, seasonFingerprintInfo, episode, libraryOptions, directoryService });
+            // 三版本签名不一致（ilspycmd 实测）：
+            //   4.8.11.0 → (Season, SeasonFingerprintInfo, Episode, LibraryOptions, IDirectoryService)              5 参
+            //   4.9.5.0  → 同上 + CancellationToken                                                               6 参
+            //   4.10.2.0 → 同上 + CancellationToken                                                               6 参
+            // 原实现硬编码 5 个实参，在 4.9/4.10 上必然抛 TargetParameterCountException: Parameter count mismatch.
+            // 改为按反射参数的名称逐位绑定，未知参数填该类型默认值（与 VideoThumbnailApi 同款做法）。
+            var parameters = _updateSequencesForSeason.GetParameters();
+            var args = new object[parameters.Length];
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                args[i] = parameters[i].Name switch
+                {
+                    "season" => season,
+                    "seasonFingerprintInfo" => seasonFingerprintInfo,
+                    "episode" => episode,
+                    "libraryOptions" => libraryOptions,
+                    "directoryService" => directoryService,
+                    "cancellationToken" => cancellationToken,
+                    _ => parameters[i].ParameterType.IsValueType
+                        ? Activator.CreateInstance(parameters[i].ParameterType)
+                        : null
+                };
+            }
+
+            _updateSequencesForSeason.Invoke(_audioFingerprintManager, args);
         }
 
         public void PatchTimeout(int maxConcurrentCount)
@@ -310,7 +351,12 @@ namespace StrmAssistant.Common
                 HasAudioStream = true
             };
 
-            if (libraryIds.All(i => i == "-1"))
+            // libraryIds 来自 MarkerEnabledLibraryScope，而该选项的 getter 恒返回 string.Empty
+            // （见 Options/IntroSkipOptions.cs，选项已 Browsable(false) 废弃），故 libraryIds 恒为空数组。
+            // 空数组的 All(...) 在 LINQ 中恒为 true，会让任务永远只查收藏夹（GetAllFavoriteSeasons），
+            // 普通库剧集一条也取不到 → "Number of episodes: 0" → 指纹提取永远空跑。
+            // 修法：仅当用户显式选了"-1"（收藏）时才走收藏分支；空数组视作"不限定范围"。
+            if (libraryIds.Length > 0 && libraryIds.All(i => i == "-1"))
             {
                 itemsFingerprintQuery.ParentIds = GetAllFavoriteSeasons().DefaultIfEmpty(-1).ToArray();
             }
@@ -382,7 +428,8 @@ namespace StrmAssistant.Common
             foreach (var episode in episodesWithoutMarkers)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                UpdateSequencesForSeason(season, seasonFingerprintInfo, episode, libraryOptions, directoryService);
+                UpdateSequencesForSeason(season, seasonFingerprintInfo, episode, libraryOptions, directoryService,
+                    cancellationToken);
 
                 index++;
                 progress?.Report(index / total);
