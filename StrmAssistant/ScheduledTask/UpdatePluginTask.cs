@@ -104,6 +104,24 @@ namespace StrmAssistant.ScheduledTask
                 {
                     _logger.Info("Found new plugin version: {0}", remoteVersion);
 
+                    var suppressList = (Plugin.Instance.GetPluginOptions().ExperienceEnhanceOptions
+                            .SuppressPluginUpdates ?? string.Empty)
+                        .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(n => n.Trim())
+                        .Where(n => n.Length > 0)
+                        .ToArray();
+                    var selfName = PluginAssemblyFilename;
+                    var suppressHit = suppressList.FirstOrDefault(n =>
+                        string.Equals(n, selfName, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(n, apiResult?.tag_name, StringComparison.OrdinalIgnoreCase) ||
+                        selfName.StartsWith(n, StringComparison.OrdinalIgnoreCase));
+                    if (suppressHit != null)
+                    {
+                        _logger.Info("Update suppressed for: {0}", suppressHit);
+                        progress.Report(100);
+                        return;
+                    }
+
                     var url = (apiResult?.assets ?? new List<ApiAssetInfo>())
                         .FirstOrDefault(asset => asset.name == PluginAssemblyFilename)
                         ?.browser_download_url;

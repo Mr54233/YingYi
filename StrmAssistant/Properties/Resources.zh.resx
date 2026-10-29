@@ -734,4 +734,151 @@
   <data name="InvalidCommunityIntroSource" xml:space="preserve">
     <value>启用社区片头源需要先解锁片头片尾探测增强。</value>
   </data>
+  <data name="ServerOptions_ProxyMode_Off_Off" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_Whitelist_Whitelist" xml:space="preserve">
+    <value>白名单</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_All_All" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_Proxy_Mode" xml:space="preserve">
+    <value>代理模式</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_Which_outgoing_server_requests_go_through_the_proxy__Not_effective_in_this_build_yet__Default_is_Off_" xml:space="preserve">
+    <value>哪些服务器对外请求走代理。当前版本暂未生效，默认为关闭。</value>
+  </data>
+  <data name="ServerOptions_ProxyServer_Proxy_Server" xml:space="preserve">
+    <value>代理服务器</value>
+  </data>
+  <data name="ServerOptions_ProxyServer_Proxy_host_and_port_like_127_0_0_1_7890__Not_effective_in_this_build_yet__Default_is_BLANK_" xml:space="preserve">
+    <value>代理地址与端口，如 127.0.0.1:7890。当前版本暂未生效，默认为空。</value>
+  </data>
+  <data name="ServerOptions_ProxyBypassList_Proxy_Bypass_List" xml:space="preserve">
+    <value>代理例外列表</value>
+  </data>
+  <data name="ServerOptions_ProxyBypassList_Hosts_that_bypass_the_proxy__Comma_separated__Not_effective_in_this_build_yet__Default_is_BLANK_" xml:space="preserve">
+    <value>不走代理的主机列表，逗号分隔。当前版本暂未生效，默认为空。</value>
+  </data>
+  <data name="ServerOptions_LocalDiscoveryUrl_Local_Discovery_Url" xml:space="preserve">
+    <value>本地发现地址</value>
+  </data>
+  <data name="ServerOptions_LocalDiscoveryUrl_Custom_url_for_local_network_discovery__Reserved_for_a_future_build__Default_is_BLANK_" xml:space="preserve">
+    <value>自定义局域网发现地址。留给后续版本，默认为空。</value>
+  </data>
+  <data name="ServerOptions_MemoryUsageLimitMb_Memory_Usage_Limit_MB" xml:space="preserve">
+    <value>内存占用上限 (MB)</value>
+  </data>
+  <data name="ServerOptions_MemoryUsageLimitMb_Cap_server_memory_usage_in_MB__0_means_no_limit__Reserved_for_a_future_build__Default_is_0_" xml:space="preserve">
+    <value>服务器内存占用上限（MB），0 表示不限制。留给后续版本，默认为 0。</value>
+  </data>
+  <data name="ServerOptions_ReverseLogLines_Reverse_Log_Lines" xml:space="preserve">
+    <value>日志倒序显示</value>
+  </data>
+  <data name="ServerOptions_ReverseLogLines_Show_newest_log_lines_first_in_the_web_dashboard__Reserved_for_a_future_build__Default_is_OFF_" xml:space="preserve">
+    <value>在 Web 控制台里最新日志排在最前。留给后续版本（前端行为），默认关闭。</value>
+  </data>
+  <data name="RestartServerTask_Description_Restarts_the_server_after_a_3_second_delay" xml:space="preserve">
+    <value>延迟 3 秒后重启服务器，让未完成的 HTTP 响应先返回。任务本身立即返回；请手动运行或用自定义 cron 触发。</value>
+  </data>
+  <data name="ScanExternalTrackTask_Description_Scans_libraries_for_external_audio_track_files" xml:space="preserve">
+    <value>扫描媒体库中与视频同名（仅扩展名不同）的外挂音轨文件。仅记录日志，不写入库。</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_EnableExternalTrackScan_Enable_External_Track_Scan" xml:space="preserve">
+    <value>启用外挂音轨扫描</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_EnableExternalTrackScan_Scan_libraries_for_external_audio_track_files_with_the_same_name_as_videos__Default_is_OFF_" xml:space="preserve">
+    <value>扫描媒体库中与视频同名的外挂音轨文件。默认关闭。</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_ExternalTrackFormats_External_Track_Formats" xml:space="preserve">
+    <value>外挂音轨格式</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_ExternalTrackFormats_Audio_file_extensions_treated_as_external_tracks__Comma_separated__Default_is_mka_ac3_eac3_" xml:space="preserve">
+    <value>视为外挂音轨的音频扩展名，逗号分隔。默认 mka,ac3,eac3。</value>
+  </data>
+  <data name="MetadataEnhanceOptions_RefreshPersonMode_Refresh_Person_Mode" xml:space="preserve">
+    <value>人物刷新模式</value>
+  </data>
+  <data name="MetadataEnhanceOptions_RefreshPersonMode_Person_metadata_refresh_mode_for_the_scheduled_task__Default_is_Default_" xml:space="preserve">
+    <value>计划任务的人物元数据刷新模式。默认为 Default。</value>
+  </data>
+  <data name="RefreshPersonOption_Default_Default" xml:space="preserve">
+    <value>默认</value>
+  </data>
+  <data name="RefreshPersonOption_FullRefresh_Full_Refresh" xml:space="preserve">
+    <value>完整刷新</value>
+  </data>
+  <data name="RefreshPersonOption_NoAdult_Skip_Adult_Entries" xml:space="preserve">
+    <value>跳过成人条目</value>
+  </data>
+  <data name="HidePersonOption_All_All" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="HidePersonOption_NoImageOnly_No_Image_Only" xml:space="preserve">
+    <value>仅无头像</value>
+  </data>
+  <data name="MetadataEnhanceOptions_HidePersonPreference_Hide_Person_Preference" xml:space="preserve">
+    <value>隐藏人物范围</value>
+  </data>
+  <data name="MetadataEnhanceOptions_HidePersonPreference_Which_persons_the_delete_task_targets_when_hiding_is_enabled__No_Image_Only_targets_persons_without_a_primary_image__Default_is_No_Image_Only_" xml:space="preserve">
+    <value>启用隐藏后删除任务的目标人物范围；“仅无头像”只处理没有主头像的人物。默认为 No Image Only。</value>
+  </data>
+  <data name="ModOptions_HidePersonNoImage_Auto_hide_cast_members_without_a_primary_image_on_movie_and_series_pages__The_delete_person_task_applies_this_preference_when_deleting__Default_is_OFF_" xml:space="preserve">
+    <value>隐藏没有主头像的演职人员；删除人物任务会按此偏好过滤。默认关闭。</value>
+  </data>
+  <data name="MediaInfoExtractOptions_EnableImageCapturePostProcess_Enable_Image_Capture_Post_Process" xml:space="preserve">
+    <value>启用图片截取后处理</value>
+  </data>
+  <data name="MediaInfoExtractOptions_EnableImageCapturePostProcess_Generate_extra_chapter_images_with_a_time_offset__Default_is_False_" xml:space="preserve">
+    <value>按时间偏移生成额外章节图片。默认关闭。</value>
+  </data>
+  <data name="MediaInfoExtractOptions_ImageCaptureOffsetSeconds_Image_Capture_Offset_Seconds" xml:space="preserve">
+    <value>图片截取偏移秒数</value>
+  </data>
+  <data name="MediaInfoExtractOptions_ImageCaptureOffsetSeconds_Time_offset_in_seconds_added_to_each_chapter_image_capture_position__Default_is_0_" xml:space="preserve">
+    <value>加到每个章节图片截取位置的时间偏移（秒）。默认为 0。</value>
+  </data>
+  <data name="GeneralOptions_CustomEncoderPath_Custom_ffmpeg_Path" xml:space="preserve">
+    <value>自定义 ffmpeg 路径</value>
+  </data>
+  <data name="GeneralOptions_CustomEncoderPath_Absolute_path_to_a_custom_ffmpeg_binary__Leave_empty_to_use_the_Emby_server_setting_" xml:space="preserve">
+    <value>自定义 ffmpeg 可执行文件的绝对路径。留空则使用 Emby 服务器设置。</value>
+  </data>
+  <data name="PersistMediaInfoProvider_Name_YingYi_Persist" xml:space="preserve">
+    <value>影医持久化</value>
+  </data>
+  <data name="IntroSkipOptions_TidbApiKey_TheIntroDB_API_Key" xml:space="preserve">
+    <value>TheIntroDB API 密钥</value>
+  </data>
+  <data name="IntroSkipOptions_TidbApiKey_Optional_API_key_for_TheIntroDB_to_raise_the_rate_limit__Leave_empty_for_anonymous_access_" xml:space="preserve">
+    <value>可选的 TheIntroDB API 密钥，用于提高限额。留空则匿名访问。</value>
+  </data>
+  <data name="IntroSkipOptions_ParallelMarkerComputation_Parallel_Marker_Computation" xml:space="preserve">
+    <value>并行计算片头标记</value>
+  </data>
+  <data name="IntroSkipOptions_ParallelMarkerComputation_Compute_intro_markers_for_episodes_within_a_season_in_parallel__Default_is_False_" xml:space="preserve">
+    <value>对同一季内的剧集并行计算片头标记。默认关闭。</value>
+  </data>
+  <data name="PinyinEnhanceOptions_SearchItemScope_Item_Type_Scope" xml:space="preserve">
+    <value>条目类型范围</value>
+  </data>
+  <data name="PinyinEnhanceOptions_SearchItemScope_Which_item_types_the_pinyin_index_covers__Default_is_all_" xml:space="preserve">
+    <value>拼音索引覆盖的条目类型。默认为全部。</value>
+  </data>
+  <data name="SearchItemScopeOption_Movie_Movie" xml:space="preserve">
+    <value>电影</value>
+  </data>
+  <data name="SearchItemScopeOption_Series_Series" xml:space="preserve">
+    <value>剧集</value>
+  </data>
+  <data name="SearchItemScopeOption_Season_Season" xml:space="preserve">
+    <value>季</value>
+  </data>
+  <data name="SearchItemScopeOption_Episode_Episode" xml:space="preserve">
+    <value>集</value>
+  </data>
+  <data name="SearchItemScopeOption_BoxSet_BoxSet" xml:space="preserve">
+    <value>合集</value>
+  </data>
 </root>

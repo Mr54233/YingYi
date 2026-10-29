@@ -1,6 +1,8 @@
+using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Persistence;
 using MediaBrowser.Controller.Providers;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Tasks;
@@ -116,6 +118,21 @@ namespace StrmAssistant.ScheduledTask
                                 Interlocked.Increment(ref skip);
                             }
                         }
+
+                        // Pro: ImageCaptureOffsetSeconds post-process. Semantics note: this
+                        // plugin has no percentage-based frame capture; Emby only extracts
+                        // chapter images, so the offset is applied to each chapter's capture
+                        // position on a throw-away copy (clamped to 0..RunTimeTicks). The
+                        // generated images are written back to the real chapters afterwards.
+                        var extractOptions = Plugin.Instance.GetPluginOptions().MediaInfoExtractOptions;
+                        var offsetSeconds = extractOptions.EnableImageCapturePostProcess
+                            ? extractOptions.ImageCaptureOffsetSeconds
+                            : 0;
+                        if (result && offsetSeconds > 0 && chapters.Count > 0)
+                        {
+                            await ApplyImageCaptureOffsetAsync(taskItem, directoryService, chapters, offsetSeconds,
+                                cancellationToken).ConfigureAwait(false);
+                        }
                     }
                     catch (OperationCanceledException)
                     {
@@ -162,6 +179,74 @@ namespace StrmAssistant.ScheduledTask
             progress.Report(100.0);
             _logger.Info($"VideoThumbnailExtract - Number of items skipped: {skip}");
             _logger.Info("VideoThumbnailExtract - Scheduled Task Complete");
+        }
+
+        /// <summary>
+        /// Pro: applies the ImageCaptureOffsetSeconds offset to chapter image capture
+        /// positions. Emby's ThumbnailGenerator only extracts chapter images (no
+        /// percentage-based capture exists in this code path), so the offset shifts each
+        /// chapter's capture point forward by the configured seconds, clamped to the item's
+        /// runtime. Extraction runs on a throw-away copy of the chapters (saveChapters:
+        /// false), then the produced image paths are copied back onto the real chapters and
+        /// persisted.
+        /// </summary>
+        private async Task ApplyImageCaptureOffsetAsync(Video taskItem, IDirectoryService directoryService,
+            List<ChapterInfo> chapters, int offsetSeconds, CancellationToken cancellationToken)
+        {
+            var runTimeTicks = taskItem.RunTimeTicks ?? 0;
+            if (runTimeTicks <= 0) return;
+
+            var offsetTicks = TimeSpan.FromSeconds(offsetSeconds).Ticks;
+            var offsetChapters = new List<ChapterInfo>(chapters.Count);
+            var changedIndexes = new List<int>(chapters.Count);
+
+            for (var i = 0; i < chapters.Count; i++)
+            {
+                var source = chapters[i];
+                var newPosition = source.StartPositionTicks + offsetTicks;
+                if (newPosition > runTimeTicks) newPosition = runTimeTicks;
+                if (newPosition < 0) newPosition = 0;
+                if (newPosition == source.StartPositionTicks) continue;
+
+                offsetChapters.Add(new ChapterInfo
+                {
+                    Name = source.Name,
+                    StartPositionTicks = newPosition,
+                    ImagePath = source.ImagePath,
+                    ImageTag = source.ImageTag,
+                    ImageDateModified = source.ImageDateModified
+                });
+                changedIndexes.Add(i);
+            }
+
+            if (offsetChapters.Count == 0) return;
+
+            var libraryOptions = _libraryManager.GetLibraryOptions(taskItem);
+            var extracted = await Plugin.VideoThumbnailApi
+                .RefreshThumbnailImages(taskItem, libraryOptions, directoryService, offsetChapters, true, false,
+                    cancellationToken).ConfigureAwait(false);
+
+            if (!extracted) return;
+
+            var anyChanged = false;
+            for (var i = 0; i < offsetChapters.Count; i++)
+            {
+                var offsetChapter = offsetChapters[i];
+                if (string.IsNullOrEmpty(offsetChapter.ImagePath)) continue;
+                var target = chapters[changedIndexes[i]];
+                if (target.ImagePath == offsetChapter.ImagePath) continue;
+                target.ImagePath = offsetChapter.ImagePath;
+                target.ImageTag = offsetChapter.ImageTag;
+                target.ImageDateModified = offsetChapter.ImageDateModified;
+                anyChanged = true;
+            }
+
+            if (anyChanged)
+            {
+                _itemRepository.SaveChapters(taskItem.InternalId, true, chapters);
+                _logger.Info($"VideoThumbnailExtract - Applied image capture offset {offsetSeconds}s to " +
+                             $"{offsetChapters.Count} chapter image(s): {taskItem.Name}");
+            }
         }
 
         public string Category =>

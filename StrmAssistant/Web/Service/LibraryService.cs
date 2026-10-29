@@ -60,10 +60,16 @@ namespace StrmAssistant.Web.Service
                 ? GetSeasonEpisodesSameVersion(episode)
                 : new List<BaseItem> { item };
 
+            var enableDeepDelete = Plugin.Instance.GetPluginOptions().ExperienceEnhanceOptions.EnableDeepDelete;
+            _logger.Info("DeleteVersion - Deep delete is " + (enableDeepDelete ? "enabled" : "disabled") +
+                         "; physical files will " + (enableDeepDelete ? "be deleted" : "be kept"));
+
             foreach (var deleteItem in deleteItems)
             {
                 var proceedToDelete = true;
-                var deletePaths = Plugin.LibraryApi.GetDeletePaths(deleteItem);
+                var deletePaths = enableDeepDelete
+                    ? Plugin.LibraryApi.GetDeletePaths(deleteItem)
+                    : Array.Empty<MediaBrowser.Model.IO.FileSystemMetadata>();
 
                 foreach (var path in deletePaths)
                 {
@@ -100,6 +106,65 @@ namespace StrmAssistant.Web.Service
                         // ignored
                     }
                 }
+            }
+        }
+
+        public void Any(ClearChapterImage request)
+        {
+            var item = _libraryManager.GetItemById(request.Id);
+
+            if (!(item is Video) || !item.IsFileProtocol)
+            {
+                return;
+            }
+
+            List<MediaBrowser.Model.Entities.ChapterInfo> chapters;
+            try { chapters = _itemRepository.GetChapters(item); }
+            catch (Exception e)
+            {
+                _logger.Error("ClearChapterImage - Failed to read chapters for " + item.Name + ": " + e.Message);
+                return;
+            }
+
+            if (chapters == null || chapters.Count == 0)
+            {
+                _logger.Info("ClearChapterImage - No chapters found for: " + item.Name);
+                return;
+            }
+
+            var cleared = 0;
+            foreach (var chapter in chapters)
+            {
+                if (string.IsNullOrEmpty(chapter.ImagePath)) continue;
+                try
+                {
+                    _logger.Info("ClearChapterImage - Deleting: " + chapter.ImagePath);
+                    _fileSystem.DeleteFile(chapter.ImagePath, true);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error("ClearChapterImage - Failed to delete: " + chapter.ImagePath);
+                    _logger.Error(e.Message);
+                }
+                chapter.ImagePath = null;
+                chapter.ImageTag = null;
+                cleared++;
+            }
+
+            if (cleared == 0)
+            {
+                _logger.Info("ClearChapterImage - Nothing to clear for: " + item.Name);
+                return;
+            }
+
+            try
+            {
+                _itemRepository.SaveChapters(item.InternalId, chapters);
+                _logger.Info("ClearChapterImage - Cleared " + cleared + " chapter image(s) for: " + item.Name);
+            }
+            catch (Exception e)
+            {
+                _logger.Error("ClearChapterImage - Failed to save chapters for " + item.Name + ": " + e.Message);
             }
         }
 

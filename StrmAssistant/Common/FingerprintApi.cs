@@ -425,14 +425,37 @@ namespace StrmAssistant.Common
             double total = episodesWithoutMarkers.Count;
             var index = 0;
 
-            foreach (var episode in episodesWithoutMarkers)
+            // Pro: optionally compute markers for the episodes of a season in
+            // parallel (seasons are already parallel via the scheduled task).
+            var parallel = Plugin.Instance.GetPluginOptions().IntroSkipOptions.ParallelMarkerComputation;
+            if (parallel && episodesWithoutMarkers.Count > 1)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                UpdateSequencesForSeason(season, seasonFingerprintInfo, episode, libraryOptions, directoryService,
-                    cancellationToken);
+                var parallelOptions = new ParallelOptions
+                {
+                    MaxDegreeOfParallelism = Math.Max(1, Environment.ProcessorCount - 1),
+                    CancellationToken = cancellationToken
+                };
 
-                index++;
-                progress?.Report(index / total);
+                Parallel.ForEach(episodesWithoutMarkers, parallelOptions, episode =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    UpdateSequencesForSeason(season, seasonFingerprintInfo, episode, libraryOptions,
+                        directoryService, cancellationToken);
+
+                    progress?.Report(Interlocked.Increment(ref index) / total);
+                });
+            }
+            else
+            {
+                foreach (var episode in episodesWithoutMarkers)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    UpdateSequencesForSeason(season, seasonFingerprintInfo, episode, libraryOptions,
+                        directoryService, cancellationToken);
+
+                    index++;
+                    progress?.Report(index / total);
+                }
             }
 
             progress?.Report(1.0);

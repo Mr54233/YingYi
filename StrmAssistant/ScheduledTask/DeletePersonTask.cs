@@ -1,4 +1,5 @@
-﻿using MediaBrowser.Controller.Entities;
+using MediaBrowser.Controller.Entities;
+using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Tasks;
@@ -32,6 +33,16 @@ namespace StrmAssistant.ScheduledTask
             });
 
             _logger.Info("DeletePerson - Number of Persons: " + personItems.Length);
+
+            var metadataOptions = Plugin.Instance.GetPluginOptions().MetadataEnhanceOptions;
+            if (metadataOptions != null && metadataOptions.HidePersonNoImage &&
+                metadataOptions.HidePersonPreference ==
+                Options.MetadataEnhanceOptions.HidePersonOption.NoImageOnly.ToString())
+            {
+                personItems = personItems.Where(p => !p.HasImage(ImageType.Primary)).ToArray();
+                _logger.Info("DeletePerson - HidePersonNoImage (NoImageOnly): " + personItems.Length +
+                             " persons without a primary image remain");
+            }
 
             _libraryManager.DeleteItems(personItems.Select(i => i.InternalId).ToArray());
 

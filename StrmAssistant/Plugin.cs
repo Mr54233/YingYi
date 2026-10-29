@@ -81,6 +81,7 @@ namespace StrmAssistant
         private readonly IProviderManager _providerManager;
         private readonly IFileSystem _fileSystem;
         private readonly ITaskManager _taskManager;
+        private readonly IFfmpegManager _ffmpegManager;
 
         private bool _currentSuppressOnOptionsSaved;
         private int _currentMaxConcurrentCount;
@@ -148,6 +149,7 @@ namespace StrmAssistant
             _providerManager = providerManager;
             _fileSystem = fileSystem;
             _taskManager = taskManager;
+            _ffmpegManager = ffmpegManager;
             ItemRepository = itemRepository;
 
             _currentMaxConcurrentCount = GetOptions().GeneralOptions.MaxConcurrentCount;
@@ -540,7 +542,15 @@ namespace StrmAssistant
                                 ?.Name) ?? Enumerable.Empty<string>());
                 Logger.Info("MediaInfoExtract - LibraryScope is set to {0}",
                     string.IsNullOrEmpty(libraryScope) ? "ALL" : libraryScope);
+
+                Logger.Info("EnableImageCapturePostProcess is set to {0}",
+                    options.MediaInfoExtractOptions.EnableImageCapturePostProcess);
+                Logger.Info("ImageCaptureOffsetSeconds is set to {0}",
+                    options.MediaInfoExtractOptions.ImageCaptureOffsetSeconds);
             }
+
+            ApplyCustomEncoderPath(options.GeneralOptions.CustomEncoderPath, suppress);
+
             if (_currentMaxConcurrentCount != options.GeneralOptions.MaxConcurrentCount)
             {
                 _currentMaxConcurrentCount = options.GeneralOptions.MaxConcurrentCount;
@@ -635,6 +645,10 @@ namespace StrmAssistant
                         : markerEnabledLibraryScope);
                 Logger.Info("IntroDetectionFingerprintMinutes is set to {0}",
                     options.IntroSkipOptions.IntroDetectionFingerprintMinutes);
+                Logger.Info("ParallelMarkerComputation is set to {0}",
+                    options.IntroSkipOptions.ParallelMarkerComputation);
+                Logger.Info("TidbApiKey is set to {0}",
+                    string.IsNullOrWhiteSpace(options.IntroSkipOptions.TidbApiKey) ? "EMPTY" : "***");
             }
             _currentUnlockIntroSkip = options.IntroSkipOptions.UnlockIntroSkip;
             FingerprintApi.UpdateLibraryPathsInScope();
@@ -682,6 +696,64 @@ namespace StrmAssistant
             if (suppress) _currentSuppressOnOptionsSaved = false;
 
             base.OnOptionsSaved(options);
+        }
+
+        /// <summary>
+        ///     Pro: CustomEncoderPath. When a non-empty path is configured, tries (via
+        ///     reflection, soft-fail) to point Emby's FfmpegConfiguration
+        ///     (UseCustomEncoderPath/CustomEncoderPath) at it. On any failure it only logs,
+        ///     so this stays an "option + log" feature on incompatible Emby builds.
+        /// </summary>
+        private void ApplyCustomEncoderPath(string customEncoderPath, bool suppress)
+        {
+            if (string.IsNullOrWhiteSpace(customEncoderPath))
+            {
+                return;
+            }
+
+            if (!File.Exists(customEncoderPath))
+            {
+                Logger.Info("CustomEncoderPath configured but the file does not exist: {0}", customEncoderPath);
+                return;
+            }
+
+            try
+            {
+                var ffmpegManager = _ffmpegManager;
+                if (ffmpegManager == null)
+                {
+                    Logger.Info(
+                        "Custom ffmpeg path configured, but the FFmpeg manager is unavailable on this Emby version");
+                    return;
+                }
+
+                var configurationProperty = ffmpegManager.GetType().GetProperty("FfmpegConfiguration");
+                var configuration = configurationProperty?.GetValue(ffmpegManager);
+                if (configuration == null)
+                {
+                    Logger.Info(
+                        "Custom ffmpeg path configured, but FfmpegConfiguration is unavailable on this Emby version");
+                    return;
+                }
+
+                var useCustomProperty = configuration.GetType().GetProperty("UseCustomEncoderPath");
+                var pathProperty = configuration.GetType().GetProperty("CustomEncoderPath");
+                if (useCustomProperty?.CanWrite != true || pathProperty?.CanWrite != true)
+                {
+                    Logger.Info(
+                        "Custom ffmpeg path configured, but runtime override not supported on this Emby version");
+                    return;
+                }
+
+                useCustomProperty.SetValue(configuration, true);
+                pathProperty.SetValue(configuration, customEncoderPath);
+                Logger.Info("Custom ffmpeg path applied: {0}", customEncoderPath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Info("Custom ffmpeg path configured, but runtime override failed: {0}", ex.Message);
+                Logger.Debug(ex.StackTrace);
+            }
         }
 
         protected override PluginOptions OnBeforeShowUI(PluginOptions options)
@@ -819,6 +891,21 @@ namespace StrmAssistant
 
             options.MetadataEnhanceOptions.EpisodeRefreshOptionList = episodeRefreshOptionList;
 
+            var refreshPersonOptionList = new List<EditorSelectOption>();
+            foreach (Enum item in Enum.GetValues(typeof(RefreshPersonOption)))
+            {
+                var selectOption = new EditorSelectOption
+                {
+                    Value = item.ToString(),
+                    Name = EnumExtensions.GetDescription(item),
+                    IsEnabled = true,
+                };
+
+                refreshPersonOptionList.Add(selectOption);
+            }
+
+            options.MetadataEnhanceOptions.RefreshPersonOptionList = refreshPersonOptionList;
+
             var introSkipPreferenceList = new List<EditorSelectOption>();
             foreach (Enum item in Enum.GetValues(typeof(IntroSkipPreference)))
             {
@@ -833,6 +920,21 @@ namespace StrmAssistant
             }
 
             options.IntroSkipOptions.IntroSkipPreferenceList = introSkipPreferenceList;
+
+            var searchScopeList = new List<EditorSelectOption>();
+            foreach (Enum item in Enum.GetValues(typeof(PinyinEnhanceOptions.SearchItemScopeOption)))
+            {
+                var selectOption = new EditorSelectOption
+                {
+                    Value = item.ToString(),
+                    Name = EnumExtensions.GetDescription(item),
+                    IsEnabled = true,
+                };
+
+                searchScopeList.Add(selectOption);
+            }
+
+            options.PinyinEnhanceOptions.SearchScopeList = searchScopeList;
 
             options.AboutOptions.VersionInfoList.Clear();
             options.AboutOptions.VersionInfoList.Add(

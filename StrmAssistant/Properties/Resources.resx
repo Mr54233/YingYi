@@ -821,4 +821,151 @@
   <data name="InvalidCommunityIntroSource" xml:space="preserve">
     <value>Community Intro Source requires Intro Skip Enhanced to be unlocked first.</value>
   </data>
+  <data name="ServerOptions_ProxyMode_Off_Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_Whitelist_Whitelist" xml:space="preserve">
+    <value>Whitelist</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_All_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_Proxy_Mode" xml:space="preserve">
+    <value>Proxy Mode</value>
+  </data>
+  <data name="ServerOptions_ProxyMode_Which_outgoing_server_requests_go_through_the_proxy__Not_effective_in_this_build_yet__Default_is_Off_" xml:space="preserve">
+    <value>Which outgoing server requests go through the proxy. Not effective in this build yet. Default is Off.</value>
+  </data>
+  <data name="ServerOptions_ProxyServer_Proxy_Server" xml:space="preserve">
+    <value>Proxy Server</value>
+  </data>
+  <data name="ServerOptions_ProxyServer_Proxy_host_and_port_like_127_0_0_1_7890__Not_effective_in_this_build_yet__Default_is_BLANK_" xml:space="preserve">
+    <value>Proxy host and port, like 127.0.0.1:7890. Not effective in this build yet. Default is BLANK.</value>
+  </data>
+  <data name="ServerOptions_ProxyBypassList_Proxy_Bypass_List" xml:space="preserve">
+    <value>Proxy Bypass List</value>
+  </data>
+  <data name="ServerOptions_ProxyBypassList_Hosts_that_bypass_the_proxy__Comma_separated__Not_effective_in_this_build_yet__Default_is_BLANK_" xml:space="preserve">
+    <value>Hosts that bypass the proxy, comma separated. Not effective in this build yet. Default is BLANK.</value>
+  </data>
+  <data name="ServerOptions_LocalDiscoveryUrl_Local_Discovery_Url" xml:space="preserve">
+    <value>Local Discovery Url</value>
+  </data>
+  <data name="ServerOptions_LocalDiscoveryUrl_Custom_url_for_local_network_discovery__Reserved_for_a_future_build__Default_is_BLANK_" xml:space="preserve">
+    <value>Custom url for local network discovery. Reserved for a future build. Default is BLANK.</value>
+  </data>
+  <data name="ServerOptions_MemoryUsageLimitMb_Memory_Usage_Limit_MB" xml:space="preserve">
+    <value>Memory Usage Limit (MB)</value>
+  </data>
+  <data name="ServerOptions_MemoryUsageLimitMb_Cap_server_memory_usage_in_MB__0_means_no_limit__Reserved_for_a_future_build__Default_is_0_" xml:space="preserve">
+    <value>Cap server memory usage in MB. 0 means no limit. Reserved for a future build. Default is 0.</value>
+  </data>
+  <data name="ServerOptions_ReverseLogLines_Reverse_Log_Lines" xml:space="preserve">
+    <value>Reverse Log Lines</value>
+  </data>
+  <data name="ServerOptions_ReverseLogLines_Show_newest_log_lines_first_in_the_web_dashboard__Reserved_for_a_future_build__Default_is_OFF_" xml:space="preserve">
+    <value>Show newest log lines first in the web dashboard. Reserved for a future build. Default is OFF.</value>
+  </data>
+  <data name="RestartServerTask_Description_Restarts_the_server_after_a_3_second_delay" xml:space="preserve">
+    <value>Restarts the server after a 3 second delay so pending HTTP responses can flush. The task returns immediately; schedule it manually or with a custom cron trigger.</value>
+  </data>
+  <data name="ScanExternalTrackTask_Description_Scans_libraries_for_external_audio_track_files" xml:space="preserve">
+    <value>Scans libraries for external audio track files that share the name of a video (except extension). Only logs findings; nothing is written to the library.</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_EnableExternalTrackScan_Enable_External_Track_Scan" xml:space="preserve">
+    <value>Enable External Track Scan</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_EnableExternalTrackScan_Scan_libraries_for_external_audio_track_files_with_the_same_name_as_videos__Default_is_OFF_" xml:space="preserve">
+    <value>Scan libraries for external audio track files with the same name as videos. Default is OFF.</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_ExternalTrackFormats_External_Track_Formats" xml:space="preserve">
+    <value>External Track Formats</value>
+  </data>
+  <data name="ExperienceEnhanceOptions_ExternalTrackFormats_Audio_file_extensions_treated_as_external_tracks__Comma_separated__Default_is_mka_ac3_eac3_" xml:space="preserve">
+    <value>Audio file extensions treated as external tracks, comma separated. Default is mka,ac3,eac3.</value>
+  </data>
+  <data name="MetadataEnhanceOptions_RefreshPersonMode_Refresh_Person_Mode" xml:space="preserve">
+    <value>Refresh Person Mode</value>
+  </data>
+  <data name="MetadataEnhanceOptions_RefreshPersonMode_Person_metadata_refresh_mode_for_the_scheduled_task__Default_is_Default_" xml:space="preserve">
+    <value>Person metadata refresh mode for the scheduled task. Default is Default.</value>
+  </data>
+  <data name="RefreshPersonOption_Default_Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="RefreshPersonOption_FullRefresh_Full_Refresh" xml:space="preserve">
+    <value>Full Refresh</value>
+  </data>
+  <data name="RefreshPersonOption_NoAdult_Skip_Adult_Entries" xml:space="preserve">
+    <value>Skip Adult Entries</value>
+  </data>
+  <data name="HidePersonOption_All_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="HidePersonOption_NoImageOnly_No_Image_Only" xml:space="preserve">
+    <value>No Image Only</value>
+  </data>
+  <data name="MetadataEnhanceOptions_HidePersonPreference_Hide_Person_Preference" xml:space="preserve">
+    <value>Hide Person Preference</value>
+  </data>
+  <data name="MetadataEnhanceOptions_HidePersonPreference_Which_persons_the_delete_task_targets_when_hiding_is_enabled__No_Image_Only_targets_persons_without_a_primary_image__Default_is_No_Image_Only_" xml:space="preserve">
+    <value>Which persons the delete task targets when hiding is enabled. No Image Only targets persons without a primary image. Default is No Image Only.</value>
+  </data>
+  <data name="ModOptions_HidePersonNoImage_Auto_hide_cast_members_without_a_primary_image_on_movie_and_series_pages__The_delete_person_task_applies_this_preference_when_deleting__Default_is_OFF_" xml:space="preserve">
+    <value>Hide cast members without a primary image; the delete person task applies this preference when deleting. Default is OFF.</value>
+  </data>
+  <data name="MediaInfoExtractOptions_EnableImageCapturePostProcess_Enable_Image_Capture_Post_Process" xml:space="preserve">
+    <value>Enable Image Capture Post Process</value>
+  </data>
+  <data name="MediaInfoExtractOptions_EnableImageCapturePostProcess_Generate_extra_chapter_images_with_a_time_offset__Default_is_False_" xml:space="preserve">
+    <value>Generate extra chapter images with a time offset. Default is False.</value>
+  </data>
+  <data name="MediaInfoExtractOptions_ImageCaptureOffsetSeconds_Image_Capture_Offset_Seconds" xml:space="preserve">
+    <value>Image Capture Offset Seconds</value>
+  </data>
+  <data name="MediaInfoExtractOptions_ImageCaptureOffsetSeconds_Time_offset_in_seconds_added_to_each_chapter_image_capture_position__Default_is_0_" xml:space="preserve">
+    <value>Time offset in seconds added to each chapter image capture position. Default is 0.</value>
+  </data>
+  <data name="GeneralOptions_CustomEncoderPath_Custom_ffmpeg_Path" xml:space="preserve">
+    <value>Custom ffmpeg Path</value>
+  </data>
+  <data name="GeneralOptions_CustomEncoderPath_Absolute_path_to_a_custom_ffmpeg_binary__Leave_empty_to_use_the_Emby_server_setting_" xml:space="preserve">
+    <value>Absolute path to a custom ffmpeg binary. Leave empty to use the Emby server setting.</value>
+  </data>
+  <data name="PersistMediaInfoProvider_Name_YingYi_Persist" xml:space="preserve">
+    <value>YingYi Persist</value>
+  </data>
+  <data name="IntroSkipOptions_TidbApiKey_TheIntroDB_API_Key" xml:space="preserve">
+    <value>TheIntroDB API Key</value>
+  </data>
+  <data name="IntroSkipOptions_TidbApiKey_Optional_API_key_for_TheIntroDB_to_raise_the_rate_limit__Leave_empty_for_anonymous_access_" xml:space="preserve">
+    <value>Optional API key for TheIntroDB to raise the rate limit. Leave empty for anonymous access.</value>
+  </data>
+  <data name="IntroSkipOptions_ParallelMarkerComputation_Parallel_Marker_Computation" xml:space="preserve">
+    <value>Parallel Marker Computation</value>
+  </data>
+  <data name="IntroSkipOptions_ParallelMarkerComputation_Compute_intro_markers_for_episodes_within_a_season_in_parallel__Default_is_False_" xml:space="preserve">
+    <value>Compute intro markers for episodes within a season in parallel. Default is False.</value>
+  </data>
+  <data name="PinyinEnhanceOptions_SearchItemScope_Item_Type_Scope" xml:space="preserve">
+    <value>Item Type Scope</value>
+  </data>
+  <data name="PinyinEnhanceOptions_SearchItemScope_Which_item_types_the_pinyin_index_covers__Default_is_all_" xml:space="preserve">
+    <value>Which item types the pinyin index covers. Default is all.</value>
+  </data>
+  <data name="SearchItemScopeOption_Movie_Movie" xml:space="preserve">
+    <value>Movie</value>
+  </data>
+  <data name="SearchItemScopeOption_Series_Series" xml:space="preserve">
+    <value>Series</value>
+  </data>
+  <data name="SearchItemScopeOption_Season_Season" xml:space="preserve">
+    <value>Season</value>
+  </data>
+  <data name="SearchItemScopeOption_Episode_Episode" xml:space="preserve">
+    <value>Episode</value>
+  </data>
+  <data name="SearchItemScopeOption_BoxSet_BoxSet" xml:space="preserve">
+    <value>BoxSet</value>
+  </data>
 </root>

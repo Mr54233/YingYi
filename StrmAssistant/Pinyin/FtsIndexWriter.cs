@@ -160,6 +160,47 @@ namespace StrmAssistant.Pinyin
             return done > 0;
         }
 
+        /// <summary>
+        ///     Pro: MediaItems.type values for the item types the pinyin index covers.
+        ///     Measured on Emby 4.10 library.db (Movie=5, Series=6, Season=7, Episode=8);
+        ///     BoxSet=16 is inferred from the 4.10 SqliteItemRepository decompilation
+        ///     (Type=16 joins ItemLinks2), no BoxSet existed in the sandbox library.
+        /// </summary>
+        private static readonly Dictionary<string, int> ItemTypeToMediaItemsType =
+            new Dictionary<string, int>(StringComparer.Ordinal)
+            {
+                { "Movie", 5 },
+                { "Series", 6 },
+                { "Season", 7 },
+                { "Episode", 8 },
+                { "BoxSet", 16 }
+            };
+
+        /// <summary>
+        ///     Pro: " AND mi.type IN (...)" clause for the SearchItemScope option.
+        ///     Empty string when the option is unset/invalid/whitelist-everything,
+        ///     which keeps the historical behaviour (all item types).
+        /// </summary>
+        private static string BuildTypeFilter()
+        {
+            var scope = Plugin.Instance.GetPluginOptions().PinyinEnhanceOptions.SearchItemScope;
+            if (string.IsNullOrWhiteSpace(scope)) return string.Empty;
+
+            var types = new List<int>();
+            foreach (var name in scope.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (ItemTypeToMediaItemsType.TryGetValue(name.Trim(), out var type) && !types.Contains(type))
+                {
+                    types.Add(type);
+                }
+            }
+
+            // Whitelist-empty after parsing means an invalid value was stored; treat
+            // as "all" rather than filtering out everything.
+            var typeList = string.Join(",", types);
+            return types.Count == 0 ? string.Empty : " AND mi.type IN (" + typeList + ")";
+        }
+
         private int CountPending(string ftsTable)
         {
             return _database.Use(db =>
@@ -167,7 +208,7 @@ namespace StrmAssistant.Pinyin
                 using (var statement = db.PrepareStatement(
                     $"SELECT count(*) FROM {ftsTable}_content c JOIN MediaItems mi ON c.id = mi.Id " +
                     "WHERE (c.c0 = mi.Name OR c.c0 = replace(replace(mi.Name, char(39), ''), '.', '')) " +
-                    "AND mi.Name GLOB '*[一-龥]*'"))
+                    $"AND mi.Name GLOB '*[一-龥]*'{BuildTypeFilter()}"))
                 {
                     statement.MoveNext();
                     return (int)statement.Current.GetInt64(0);
@@ -181,7 +222,7 @@ namespace StrmAssistant.Pinyin
             using (var statement = db.PrepareStatement(
                 $"SELECT c.id, mi.Name FROM {ftsTable}_content c JOIN MediaItems mi ON c.id = mi.Id " +
                 "WHERE (c.c0 = mi.Name OR c.c0 = replace(replace(mi.Name, char(39), ''), '.', '')) " +
-                "AND mi.Name GLOB '*[一-龥]*' AND c.id > ? ORDER BY c.id LIMIT " + BatchSize))
+                $"AND mi.Name GLOB '*[一-龥]*'{BuildTypeFilter()} AND c.id > ? ORDER BY c.id LIMIT " + BatchSize))
             {
                 statement.BindParameters[0].Bind(lastId);
                 while (statement.MoveNext())
@@ -201,7 +242,7 @@ namespace StrmAssistant.Pinyin
             using (var statement = db.PrepareStatement(
                 $"SELECT c.id, mi.Name FROM {ftsTable}_content c JOIN MediaItems mi ON c.id = mi.Id " +
                 "WHERE c.id = ? AND (c.c0 = mi.Name OR c.c0 = replace(replace(mi.Name, char(39), ''), '.', '')) " +
-                "AND mi.Name GLOB '*[一-龥]*'"))
+                $"AND mi.Name GLOB '*[一-龥]*'{BuildTypeFilter()}"))
             {
                 statement.BindParameters[0].Bind(internalId);
                 while (statement.MoveNext())

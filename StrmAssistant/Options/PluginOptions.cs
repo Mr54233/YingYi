@@ -44,6 +44,9 @@ namespace StrmAssistant.Options
         [DisplayNameL("PinyinEnhanceOptions_EditorTitle_Pinyin_Enhance", typeof(Resources))]
         public PinyinEnhanceOptions PinyinEnhanceOptions { get; set; } = new PinyinEnhanceOptions();
 
+        [DisplayNameL("NetworkOptions_EditorTitle_Network", typeof(Resources))]
+        public ServerOptions ServerOptions { get; set; } = new ServerOptions();
+
         [DisplayNameL("AboutOptions_EditorTitle_About", typeof(Resources))]
         public AboutOptions AboutOptions { get; set; } = new AboutOptions();
 

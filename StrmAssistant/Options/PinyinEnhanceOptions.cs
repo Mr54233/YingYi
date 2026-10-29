@@ -37,5 +37,36 @@ namespace StrmAssistant.Options
 
         [Browsable(false)]
         public bool IsLibraryScopeVisible => EnablePinyinSearch || EnablePinyinSortName;
+
+        /// <summary>
+        /// Pro: 拼音索引覆盖的条目类型。默认全选（Movie/Series/Season/Episode/BoxSet）。
+        /// 消费点在 Pinyin/FtsIndexWriter.cs：pending SQL 会按 MediaItems.type 过滤，
+        /// 类型→type 数字映射来自 4.10 library.db 实测（BoxSet 为反编译推断值）。
+        /// </summary>
+        public enum SearchItemScopeOption
+        {
+            [DescriptionL("SearchItemScopeOption_Movie_Movie", typeof(Resources))]
+            Movie,
+            [DescriptionL("SearchItemScopeOption_Series_Series", typeof(Resources))]
+            Series,
+            [DescriptionL("SearchItemScopeOption_Season_Season", typeof(Resources))]
+            Season,
+            [DescriptionL("SearchItemScopeOption_Episode_Episode", typeof(Resources))]
+            Episode,
+            [DescriptionL("SearchItemScopeOption_BoxSet_BoxSet", typeof(Resources))]
+            BoxSet
+        }
+
+        [Browsable(false)]
+        public List<EditorSelectOption> SearchScopeList { get; set; } = new List<EditorSelectOption>();
+
+        [DisplayNameL("PinyinEnhanceOptions_SearchItemScope_Item_Type_Scope", typeof(Resources))]
+        [DescriptionL("PinyinEnhanceOptions_SearchItemScope_Which_item_types_the_pinyin_index_covers__Default_is_all_", typeof(Resources))]
+        [EditMultilSelect]
+        [SelectItemsSource(nameof(SearchScopeList))]
+        [VisibleCondition(nameof(IsLibraryScopeVisible), SimpleCondition.IsTrue)]
+        public string SearchItemScope { get; set; } = string.Join(",", SearchItemScopeOption.Movie.ToString(),
+            SearchItemScopeOption.Series.ToString(), SearchItemScopeOption.Season.ToString(),
+            SearchItemScopeOption.Episode.ToString(), SearchItemScopeOption.BoxSet.ToString());
     }
 }

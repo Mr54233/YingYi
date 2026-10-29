@@ -407,6 +407,13 @@ namespace StrmAssistant.IntroSkip
                         EnableDefaultUserAgent = false
                     };
 
+                    // Pro: optional TheIntroDB API key raises the rate limit when set.
+                    var tidbApiKey = Plugin.Instance.GetPluginOptions().IntroSkipOptions.TidbApiKey;
+                    if (!string.IsNullOrWhiteSpace(tidbApiKey))
+                    {
+                        options.RequestHeaders["Api-Key"] = tidbApiKey;
+                    }
+
                     using (var response = await _httpClient.SendAsync(options, "GET").ConfigureAwait(false))
                     {
                         if (response.StatusCode != HttpStatusCode.OK)

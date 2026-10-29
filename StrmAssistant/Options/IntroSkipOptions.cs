@@ -159,6 +159,25 @@ namespace StrmAssistant.Options
         [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
         public bool CommunitySourceRequireManualConfirm { get; set; } = false;
 
+        /// <summary>
+        /// Pro: TheIntroDB API Key。非空时会以 "Api-Key" 请求头发给 api.theintrodb.org，
+        /// 用于提升该社区源的请求限额。
+        /// </summary>
+        [DisplayNameL("IntroSkipOptions_TidbApiKey_TheIntroDB_API_Key", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_TidbApiKey_Optional_API_key_for_TheIntroDB_to_raise_the_rate_limit__Leave_empty_for_anonymous_access_", typeof(Resources))]
+        [Required]
+        [VisibleCondition(nameof(EnableCommunityIntroSource), SimpleCondition.IsTrue)]
+        public string TidbApiKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Pro: 季内并行计算片头标记。开启后单个季内部的各集指纹→标记计算会并行执行
+        /// （MaxDegreeOfParallelism = ProcessorCount-1）；季与季之间本来就并行，不受此开关影响。
+        /// </summary>
+        [DisplayNameL("IntroSkipOptions_ParallelMarkerComputation_Parallel_Marker_Computation", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_ParallelMarkerComputation_Compute_intro_markers_for_episodes_within_a_season_in_parallel__Default_is_False_", typeof(Resources))]
+        [Required]
+        public bool ParallelMarkerComputation { get; set; } = false;
+
         protected override void Validate(ValidationContext context)
         {
             if (EnableCommunityIntroSource && !UnlockIntroSkip)
