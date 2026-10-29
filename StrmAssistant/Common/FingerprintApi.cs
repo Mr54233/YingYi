@@ -231,7 +231,8 @@ namespace StrmAssistant.Common
             var resultItems = new List<Episode>();
             var incomingItems = items.OfType<Episode>().ToList();
 
-            if (IsCatchupTaskSelected(GeneralOptions.CatchupTask.Fingerprint) && LibraryPathsInScope.Any())
+            if ((IsCatchupTaskSelected(GeneralOptions.CatchupTask.Fingerprint) ||
+                 Utility.AutoIntroScrapeActive) && LibraryPathsInScope.Any())
             {
                 if (includeFavorites)
                 {

@@ -178,6 +178,34 @@ namespace StrmAssistant.Options
         [Required]
         public bool ParallelMarkerComputation { get; set; } = false;
 
+
+        // ===== Pro 对齐：播放期控制（IntroSkipPlaybackOptions 组）=====
+        // 语义参考 Pro：播放会话建立时决定 marker 应用方式。我们已有 IntroSkipPreferences
+        // （ResetAndOverwrite / NoDetectionButReset）覆盖核心语义；此处补充可配的播放期行为开关。
+
+        /// <summary>
+        /// Pro: IntroSkipPlaybackOptions。播放会话建立后跳过片头时是否重置播放位置标记，
+        /// 关闭时已跳过片段不再重复跳过（部分播放器兼容性更好）。默认 ON。
+        /// </summary>
+        [DisplayNameL("IntroSkipOptions_EnablePlaybackResumeControl_Playback_Resume_Control", typeof(Resources))]
+        [DescriptionL("IntroSkipOptions_EnablePlaybackResumeControl_Reset_resume_position_when_intro_is_skipped__Default_is_ON_", typeof(Resources))]
+        [Required]
+        [VisibleCondition(nameof(EnableIntroSkip), SimpleCondition.IsTrue)]
+        public bool EnablePlaybackResumeControl { get; set; } = true;
+
+        // ===== Pro 对齐：自动抓取（IntroSkipScrapeOptions 组）=====
+
+        /// <summary>
+        /// Pro: IntroSkipScrapeOptions.EnableAutomaticIntroScraping。
+        /// 新内容入库时自动入指纹提取队列（等价于把新集扔回 FingerprintItemQueue），
+        /// 无需手动跑任务。会拖慢库扫描（Pro 原文警告 May slow down library scans）。默认 OFF。
+        /// </summary>
+        [DisplayNameL("IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Enable_Automatic_Scraping", typeof(Resources))]
+        [DescriptionL("IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Scrape_intro_credits_markers_for_new_content__May_slow_down_library_scans__Default_is_OFF_", typeof(Resources))]
+        [Required]
+        [VisibleCondition(nameof(UnlockIntroSkip), SimpleCondition.IsTrue)]
+        public bool EnableAutomaticIntroScraping { get; set; } = false;
+
         protected override void Validate(ValidationContext context)
         {
             if (EnableCommunityIntroSource && !UnlockIntroSkip)

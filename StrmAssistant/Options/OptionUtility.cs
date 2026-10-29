@@ -28,6 +28,12 @@ namespace StrmAssistant.Options
                 Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Pro: IntroSkipScrapeOptions.EnableAutomaticIntroScraping 的运行时镜像。
+        /// 开启时指纹队列的条目过滤不再依赖 Catchup 任务勾选（自动抓取独立于追赶模式）。
+        /// </summary>
+        public static bool AutoIntroScrapeActive { get; set; }
+
         public static bool IsCatchupTaskSelected(params CatchupTask[] tasksToCheck)
         {
             return tasksToCheck.Any(f => _selectedCatchupTasks.Contains(f.ToString()));

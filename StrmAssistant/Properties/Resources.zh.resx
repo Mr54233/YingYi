@@ -881,4 +881,16 @@
   <data name="SearchItemScopeOption_BoxSet_BoxSet" xml:space="preserve">
     <value>合集</value>
   </data>
+  <data name="IntroSkipOptions_EnablePlaybackResumeControl_Playback_Resume_Control" xml:space="preserve">
+    <value>播放位置重置控制</value>
+  </data>
+  <data name="IntroSkipOptions_EnablePlaybackResumeControl_Reset_resume_position_when_intro_is_skipped__Default_is_ON_" xml:space="preserve">
+    <value>跳过片头时重置播放位置标记（对部分播放器兼容性更好）。默认开启</value>
+  </data>
+  <data name="IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Enable_Automatic_Scraping" xml:space="preserve">
+    <value>启用自动抓取</value>
+  </data>
+  <data name="IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Scrape_intro_credits_markers_for_new_content__May_slow_down_library_scans__Default_is_OFF_" xml:space="preserve">
+    <value>新内容入库时自动抓取片头/片尾标记，可能拖慢库扫描，默认关闭</value>
+  </data>
 </root>

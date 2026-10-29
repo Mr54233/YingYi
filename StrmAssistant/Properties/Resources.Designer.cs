@@ -2683,5 +2683,41 @@ namespace StrmAssistant.Properties {
                 return ResourceManager.GetString("SearchItemScopeOption_BoxSet_BoxSet", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Playback Resume Control.
+        /// </summary>
+        public static string IntroSkipOptions_EnablePlaybackResumeControl_Playback_Resume_Control {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_EnablePlaybackResumeControl_Playback_Resume_Control", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Reset resume position when intro is skipped. Default is ON.
+        /// </summary>
+        public static string IntroSkipOptions_EnablePlaybackResumeControl_Reset_resume_position_when_intro_is_skipped__Default_is_ON_ {
+            get {
+                return ResourceManager.GetString("IntroSkipOptions_EnablePlaybackResumeControl_Reset_resume_position_when_intro_is_skipped__Default_is_ON_", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enable Automatic Scraping.
+        /// </summary>
+        public static string IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Enable_Automatic_Scraping {
+            get {
+                return ResourceManager.GetString("IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Enable_Automatic_Scraping", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Scrape intro/credits markers for new content. May slow down library scans. Default is OFF.
+        /// </summary>
+        public static string IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Scrape_intro_credits_markers_for_new_content__May_slow_down_library_scans__Default_is_OFF_ {
+            get {
+                return ResourceManager.GetString("IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Scrape_intro_credits_markers_for_new_content__May_slow_down_library_scans__Default_is_OFF_", resourceCulture);
+            }
+        }
+
     }
 }

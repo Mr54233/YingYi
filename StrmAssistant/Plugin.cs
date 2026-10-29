@@ -91,6 +91,7 @@ namespace StrmAssistant
         private bool _currentCatchupMode;
         private bool _currentEnableIntroSkip;
         private bool _currentUnlockIntroSkip;
+        private bool _currentEnableAutomaticIntroScraping;
         private bool _currentMergeMultiVersion;
         private bool _currentPinyinSearch;
         private bool _currentPinyinSortName;
@@ -160,6 +161,8 @@ namespace StrmAssistant
             _currentCatchupMode = GetOptions().GeneralOptions.CatchupMode;
             _currentEnableIntroSkip = GetOptions().IntroSkipOptions.EnableIntroSkip;
             _currentUnlockIntroSkip = GetOptions().IntroSkipOptions.UnlockIntroSkip;
+            _currentEnableAutomaticIntroScraping = GetOptions().IntroSkipOptions.EnableAutomaticIntroScraping;
+            Utility.AutoIntroScrapeActive = _currentEnableAutomaticIntroScraping;
             _currentMergeMultiVersion = GetOptions().ExperienceEnhanceOptions.MergeMultiVersion;
             _currentPinyinSearch = GetOptions().PinyinEnhanceOptions.EnablePinyinSearch;
             _currentPinyinSortName = GetOptions().PinyinEnhanceOptions.EnablePinyinSortName;
@@ -192,7 +195,7 @@ namespace StrmAssistant
                 mediaMountManager, serverApplicationPaths, libraryMonitor, ffmpegManager);
             ShortcutMenuHelper.Initialize(configurationManager);
 
-            if (_currentCatchupMode) QueueManager.Initialize();
+            if (_currentCatchupMode || _currentEnableAutomaticIntroScraping) QueueManager.Initialize();
             if (_currentEnableIntroSkip) PlaySessionMonitor.Initialize();
 
             // P1-1 / P1-2 wiring. Constructing the layer does no database work and no
@@ -313,6 +316,14 @@ namespace StrmAssistant
                         _ = MediaInfoApi.SerializeMediaInfo(e.Item.InternalId, directoryService, true,
                             "OnItemAdded Overwrite").ConfigureAwait(false);
                     }
+                }
+
+                // Pro: IntroSkipScrapeOptions.EnableAutomaticIntroScraping - queue new episodes
+                // for fingerprint extraction on ingest (no catchup-mode requirement).
+                if (_currentEnableAutomaticIntroScraping && e.Item is Episode newEpisode &&
+                    FingerprintApi.IsLibraryInScope(newEpisode))
+                {
+                    QueueManager.FingerprintItemQueue.Enqueue(newEpisode);
                 }
 
                 if (_currentCatchupMode && (e.Item is Video || e.Item is Audio))
@@ -513,10 +524,20 @@ namespace StrmAssistant
                 {
                     QueueManager.Initialize();
                 }
-                else
+                else if (!_currentEnableAutomaticIntroScraping)
                 {
+                    // keep the queue monitor alive when automatic intro scraping needs it
                     QueueManager.Dispose();
                 }
+            }
+            else if (!options.GeneralOptions.CatchupMode &&
+                     _currentEnableAutomaticIntroScraping != options.IntroSkipOptions.EnableAutomaticIntroScraping)
+            {
+                // catchup stayed off but the auto-scrape flag flipped - make sure the
+                // fingerprint queue monitor reflects the new state.
+                _currentEnableAutomaticIntroScraping = options.IntroSkipOptions.EnableAutomaticIntroScraping;
+                Utility.AutoIntroScrapeActive = _currentEnableAutomaticIntroScraping;
+                if (_currentEnableAutomaticIntroScraping) QueueManager.Initialize();
             }
             UpdateCatchupScope();
 
@@ -651,6 +672,7 @@ namespace StrmAssistant
                     string.IsNullOrWhiteSpace(options.IntroSkipOptions.TidbApiKey) ? "EMPTY" : "***");
             }
             _currentUnlockIntroSkip = options.IntroSkipOptions.UnlockIntroSkip;
+            _currentEnableAutomaticIntroScraping = options.IntroSkipOptions.EnableAutomaticIntroScraping;
             FingerprintApi.UpdateLibraryPathsInScope();
             FingerprintApi.UpdateLibraryIntroDetectionFingerprintLength();
 

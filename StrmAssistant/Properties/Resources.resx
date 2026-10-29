@@ -968,4 +968,16 @@
   <data name="SearchItemScopeOption_BoxSet_BoxSet" xml:space="preserve">
     <value>BoxSet</value>
   </data>
+  <data name="IntroSkipOptions_EnablePlaybackResumeControl_Playback_Resume_Control" xml:space="preserve">
+    <value>Playback Resume Control</value>
+  </data>
+  <data name="IntroSkipOptions_EnablePlaybackResumeControl_Reset_resume_position_when_intro_is_skipped__Default_is_ON_" xml:space="preserve">
+    <value>Reset resume position when intro is skipped. Default is ON</value>
+  </data>
+  <data name="IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Enable_Automatic_Scraping" xml:space="preserve">
+    <value>Enable Automatic Scraping</value>
+  </data>
+  <data name="IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Scrape_intro_credits_markers_for_new_content__May_slow_down_library_scans__Default_is_OFF_" xml:space="preserve">
+    <value>Scrape intro/credits markers for new content. May slow down library scans. Default is OFF</value>
+  </data>
 </root>
