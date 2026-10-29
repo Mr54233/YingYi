@@ -893,4 +893,34 @@
   <data name="IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Scrape_intro_credits_markers_for_new_content__May_slow_down_library_scans__Default_is_OFF_" xml:space="preserve">
     <value>新内容入库时自动抓取片头/片尾标记，可能拖慢库扫描，默认关闭</value>
   </data>
+  <data name="BangumiExternalId_Name_Bangumi" xml:space="preserve">
+    <value>Bangumi（番组计划）</value>
+  </data>
+  <data name="MetadataRefreshOptions_EditorTitle_Rating" xml:space="preserve">
+    <value>评分聚合</value>
+  </data>
+  <data name="Rating_EnableRatingAggregation_Enable_Rating_Aggregation" xml:space="preserve">
+    <value>启用评分聚合</value>
+  </data>
+  <data name="Rating_EnableRatingAggregation_Enable_Rating_Aggregation_Default_is_OFF_" xml:space="preserve">
+    <value>聚合烂番茄与 IMDb 评分并写入评论家评分字段，需要 OMDb 或 MDBList API key。默认关闭</value>
+  </data>
+  <data name="Rating_MdbListApiKey_MDBList_API_Key" xml:space="preserve">
+    <value>MDBList API Key</value>
+  </data>
+  <data name="Rating_MdbListApiKey_Optional_API_key_for_MDBList__Leave_blank_to_skip_this_source_" xml:space="preserve">
+    <value>MDBList 的 API key，用于增强烂番茄与 IMDb 评分的获取能力。留空则跳过该来源。</value>
+  </data>
+  <data name="Rating_OmdbApiKey_OMDb_API_Key" xml:space="preserve">
+    <value>OMDb API Key</value>
+  </data>
+  <data name="Rating_OmdbApiKey_Optional_API_key_for_OMDb__Leave_blank_to_skip_this_source_" xml:space="preserve">
+    <value>OMDb 的 API key，烂番茄评分的优先来源。留空则跳过该来源。</value>
+  </data>
+  <data name="Rating_RatingUpdateLookbackDays_Rating_Update_Lookback_Days" xml:space="preserve">
+    <value>评分更新回看天数</value>
+  </data>
+  <data name="Rating_RatingUpdateLookbackDays_Only_update_ratings_for_items_released_within_this_many_days__Default_is_365_" xml:space="preserve">
+    <value>只更新首播日期在回看窗口内的条目评分，避免全库重刷。默认 365 天。</value>
+  </data>
 </root>

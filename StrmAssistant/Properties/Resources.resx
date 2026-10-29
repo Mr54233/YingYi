@@ -980,4 +980,34 @@
   <data name="IntroSkipScrapeOptions_EnableAutomaticIntroScraping_Scrape_intro_credits_markers_for_new_content__May_slow_down_library_scans__Default_is_OFF_" xml:space="preserve">
     <value>Scrape intro/credits markers for new content. May slow down library scans. Default is OFF</value>
   </data>
+  <data name="BangumiExternalId_Name_Bangumi" xml:space="preserve">
+    <value>Bangumi</value>
+  </data>
+  <data name="MetadataRefreshOptions_EditorTitle_Rating" xml:space="preserve">
+    <value>Rating Aggregation</value>
+  </data>
+  <data name="Rating_EnableRatingAggregation_Enable_Rating_Aggregation" xml:space="preserve">
+    <value>Enable Rating Aggregation</value>
+  </data>
+  <data name="Rating_EnableRatingAggregation_Enable_Rating_Aggregation_Default_is_OFF_" xml:space="preserve">
+    <value>Aggregate Rotten Tomatoes and IMDb scores and write them to the critic rating field. Requires an OMDb or MDBList API key. Default is OFF</value>
+  </data>
+  <data name="Rating_MdbListApiKey_MDBList_API_Key" xml:space="preserve">
+    <value>MDBList API Key</value>
+  </data>
+  <data name="Rating_MdbListApiKey_Optional_API_key_for_MDBList__Leave_blank_to_skip_this_source_" xml:space="preserve">
+    <value>API key for MDBList, used to improve the capability of Rotten Tomatoes and IMDb score retrieval. Leave blank to skip this source.</value>
+  </data>
+  <data name="Rating_OmdbApiKey_OMDb_API_Key" xml:space="preserve">
+    <value>OMDb API Key</value>
+  </data>
+  <data name="Rating_OmdbApiKey_Optional_API_key_for_OMDb__Leave_blank_to_skip_this_source_" xml:space="preserve">
+    <value>API key for OMDb, the primary source of Rotten Tomatoes scores. Leave blank to skip this source.</value>
+  </data>
+  <data name="Rating_RatingUpdateLookbackDays_Rating_Update_Lookback_Days" xml:space="preserve">
+    <value>Rating Update Lookback Days</value>
+  </data>
+  <data name="Rating_RatingUpdateLookbackDays_Only_update_ratings_for_items_released_within_this_many_days__Default_is_365_" xml:space="preserve">
+    <value>Only update ratings for items first released within this many days, to avoid rescanning the whole library. Default is 365.</value>
+  </data>
 </root>

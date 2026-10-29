@@ -38,6 +38,9 @@ namespace StrmAssistant.Options
         [DisplayNameL("PluginOptions_IntroSkipOptions_Intro_Credits_Detection", typeof(Resources))]
         public IntroSkipOptions IntroSkipOptions { get; set; } = new IntroSkipOptions();
 
+        [DisplayNameL("MetadataRefreshOptions_EditorTitle_Rating", typeof(Resources))]
+        public MetadataRefreshOptions MetadataRefreshOptions { get; set; } = new MetadataRefreshOptions();
+
         [DisplayNameL("ExperienceEnhanceOptions_EditorTitle_Experience_Enhance", typeof(Resources))]
         public ExperienceEnhanceOptions ExperienceEnhanceOptions { get; set; } = new ExperienceEnhanceOptions();
 
