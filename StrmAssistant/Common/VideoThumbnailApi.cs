@@ -77,21 +77,68 @@ namespace StrmAssistant.Common
             IDirectoryService directoryService, List<ChapterInfo> chapters, bool extractImages, bool saveChapters,
             CancellationToken cancellationToken)
         {
-            var mediaSource = AppVer >= Ver4936
-                ? item.GetMediaSources(false, false, libraryOptions).FirstOrDefault()
-                : null;
+            // RefreshThumbnailImages 的参数表在各 Emby 版本间不一致：
+            //   4.8.11.0  8 参：(item, videoStream, libraryOptions, directoryService, chapters, extractImages, saveChapters, ct)
+            //   4.9.5.0+  10 参：(item, mediaSource, videoStream, libraryOptions, directoryService, chapters,
+            //                    extractImages, replaceExistingImages, saveChapters, ct)
+            // 按版本号硬编码参数数组极易错位（曾因漏掉 replaceExistingImages 触发 TargetParameterCountException:
+            // "Parameter count mismatch."），故改为按被调方法的实际参数名逐位绑定。
+            var mediaSource = item.GetMediaSources(false, false, libraryOptions).FirstOrDefault();
 
-            var parameters = AppVer >= Ver4936
-                ? new object[]
+            var methodParameters = _refreshThumbnailImages.GetParameters();
+            var parameters = new object[methodParameters.Length];
+
+            for (var i = 0; i < methodParameters.Length; i++)
+            {
+                var name = methodParameters[i].Name ?? string.Empty;
+
+                if (name.Equals("item", StringComparison.OrdinalIgnoreCase))
                 {
-                    item, mediaSource, null, libraryOptions, directoryService, chapters, extractImages,
-                    saveChapters, cancellationToken
+                    parameters[i] = item;
                 }
-                : new object[]
+                else if (name.Equals("mediaSource", StringComparison.OrdinalIgnoreCase))
                 {
-                    item, null, libraryOptions, directoryService, chapters, extractImages, saveChapters,
-                    cancellationToken
-                };
+                    parameters[i] = mediaSource;
+                }
+                else if (name.Equals("videoStream", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = null;
+                }
+                else if (name.Equals("libraryOptions", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = libraryOptions;
+                }
+                else if (name.Equals("directoryService", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = directoryService;
+                }
+                else if (name.Equals("chapters", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = chapters;
+                }
+                else if (name.Equals("extractImages", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = extractImages;
+                }
+                else if (name.Equals("replaceExistingImages", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = false;
+                }
+                else if (name.Equals("saveChapters", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = saveChapters;
+                }
+                else if (name.Equals("cancellationToken", StringComparison.OrdinalIgnoreCase))
+                {
+                    parameters[i] = cancellationToken;
+                }
+                else
+                {
+                    parameters[i] = methodParameters[i].ParameterType.IsValueType
+                        ? Activator.CreateInstance(methodParameters[i].ParameterType)
+                        : null;
+                }
+            }
 
             return (Task<bool>)_refreshThumbnailImages.Invoke(_thumbnailGenerator, parameters);
         }
