@@ -28,5 +28,13 @@ namespace StrmAssistant.Options
         [DescriptionL("Rating_RatingUpdateLookbackDays_Only_update_ratings_for_items_released_within_this_many_days__Default_is_365_", typeof(Resources))]
         [Required]
         public int RatingUpdateLookbackDays { get; set; } = 365;
+
+        [DisplayNameL("MetadataRefreshOptions_DoubanAccessToken_Douban_Access_Token", typeof(Resources))]
+        [DescriptionL("MetadataRefreshOptions_DoubanAccessToken_Optional_token_for_the_Douban_assistant__Leave_blank_to_use_the_public_m_douban_com_endpoints_", typeof(Resources))]
+        public string DoubanAccessToken { get; set; } = string.Empty;
+
+        [DisplayNameL("MetadataRefreshOptions_DoubanCookie_Douban_Cookie", typeof(Resources))]
+        [DescriptionL("MetadataRefreshOptions_DoubanCookie_Optional_cookie_header_for_the_Douban_assistant__Leave_blank_for_anonymous_access_", typeof(Resources))]
+        public string DoubanCookie { get; set; } = string.Empty;
     }
 }

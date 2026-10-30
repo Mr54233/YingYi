@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<!-- 
 		Microsoft ResX Schema
@@ -1009,5 +1009,137 @@
   </data>
   <data name="Rating_RatingUpdateLookbackDays_Only_update_ratings_for_items_released_within_this_many_days__Default_is_365_" xml:space="preserve">
     <value>Only update ratings for items first released within this many days, to avoid rescanning the whole library. Default is 365.</value>
+  </data>
+  <data name="MetadataBuildOptions_EditorTitle_Metadata_Cache" xml:space="preserve">
+    <value>Metadata Cache</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheMode_Metadata_Cache_Mode" xml:space="preserve">
+    <value>Metadata Cache Mode</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheMode_Whether_and_how_to_use_the_local_metadata_cache__Default_is_Disabled_" xml:space="preserve">
+    <value>Whether and how to use the local metadata cache. Default is Disabled.</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheRootFolder_Cache_Root_Folder" xml:space="preserve">
+    <value>Cache Root Folder</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheRootFolder_Root_folder_to_store_metadata_cache_JSON_files__Required_when_cache_mode_is_enabled_" xml:space="preserve">
+    <value>Root folder to store metadata cache JSON files. Required when cache mode is enabled.</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheOptionalImageTypes_Optional_Image_Types" xml:space="preserve">
+    <value>Optional Image Types</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheOptionalImageTypes_Image_types_to_include_in_the_cache_besides_the_primary_image__Default_is_EMPTY_" xml:space="preserve">
+    <value>Image types to include in the cache besides the primary image. Default is EMPTY.</value>
+  </data>
+  <data name="MetadataCacheOption_None_Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="MetadataCacheOption_PreferCacheThenOnline_Cache_first__fall_back_to_online" xml:space="preserve">
+    <value>Cache first, fall back to online</value>
+  </data>
+  <data name="MetadataCacheOption_PreferOnlineWithCache_Online_first__write_back_to_cache" xml:space="preserve">
+    <value>Online first, write back to cache</value>
+  </data>
+  <data name="MetadataCacheOption_UseOverrideCacheOnly_Cache_only__never_hit_online" xml:space="preserve">
+    <value>Cache only, never hit online</value>
+  </data>
+  <data name="MetadataCacheRootFolderNotExist" xml:space="preserve">
+    <value>Cache Root Folder is required when Metadata Cache Mode is enabled.</value>
+  </data>
+  <data name="MetadataScrapeOptions_EditorTitle_Scrape_Rules" xml:space="preserve">
+    <value>Scrape Rules</value>
+  </data>
+  <data name="MetadataScrapeOptions_EnableAltMovieDbUrl_Enable_Alternative_MovieDb_URL" xml:space="preserve">
+    <value>Enable Alternative MovieDb URL</value>
+  </data>
+  <data name="MetadataScrapeOptions_EnableAltMovieDbUrl_Use_alternative_TMDb_API_URL_image_URL_and_API_key_instead_of_the_system_defaults__Default_is_False_" xml:space="preserve">
+    <value>Use alternative TMDb API URL, image URL and API key instead of the system defaults. Default is False.</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiUrl_Alternative_MovieDb_API_URL" xml:space="preserve">
+    <value>Alternative MovieDb API URL</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiUrl_Default_alternative_is_https___api_tmdb_org__Blank_uses_system_default_https___api_themoviedb_org_" xml:space="preserve">
+    <value>Default alternative is https://api.tmdb.org; Blank uses system default https://api.themoviedb.org.</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiKey_Alternative_MovieDb_API_Key" xml:space="preserve">
+    <value>Alternative MovieDb API Key</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiKey_API_key_used_with_the_alternative_TMDb_endpoint__Blank_uses_system_default_" xml:space="preserve">
+    <value>API key used with the alternative TMDb endpoint. Blank uses system default.</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbImageUrl_Alternative_MovieDb_Image_URL" xml:space="preserve">
+    <value>Alternative MovieDb Image URL</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbImageUrl_Base_URL_for_TMDb_images__Blank_uses_system_default_" xml:space="preserve">
+    <value>Base URL for TMDb images. Blank uses system default.</value>
+  </data>
+  <data name="MetadataScrapeOptions_ChineseTvdb_Chinese_TVDB" xml:space="preserve">
+    <value>Chinese TVDB</value>
+  </data>
+  <data name="MetadataScrapeOptions_ChineseTvdb_When_set__TVDB_metadata_is_preferred_in_Chinese_languages__Default_is_False_" xml:space="preserve">
+    <value>When set, TVDB metadata is preferred in Chinese languages. Default is False.</value>
+  </data>
+  <data name="MetadataScrapeOptions_BlockNonFallbackLanguage_Block_Non_Fallback_Languages" xml:space="preserve">
+    <value>Block Non-Fallback Languages</value>
+  </data>
+  <data name="MetadataScrapeOptions_BlockNonFallbackLanguage_Only_keep_metadata_in_MovieDb_TVDB_fallback_languages__Default_is_False_" xml:space="preserve">
+    <value>Only keep metadata in MovieDb/TVDB fallback languages. Default is False.</value>
+  </data>
+  <data name="MetadataScrapeOptions_LocalEpisodeGroup_Local_Episode_Group" xml:space="preserve">
+    <value>Local Episode Group</value>
+  </data>
+  <data name="MetadataScrapeOptions_LocalEpisodeGroup_Use_local_absolute_episode_numbering_for_TVDB_episodes__Default_is_False_" xml:space="preserve">
+    <value>Use local absolute episode numbering for TVDB episodes. Default is False.</value>
+  </data>
+  <data name="MetadataScrapeOptions_MovieDbEpisodeGroup_MovieDb_Episode_Group" xml:space="preserve">
+    <value>MovieDb Episode Group</value>
+  </data>
+  <data name="MetadataScrapeOptions_MovieDbEpisodeGroup_Use_the_TMDb_episode_group_endpoint_instead_of_the_default_season_episodes__Default_is_False_" xml:space="preserve">
+    <value>Use the TMDb episode group endpoint instead of the default season episodes. Default is False.</value>
+  </data>
+  <data name="DoubanExternalId_Name_Douban" xml:space="preserve">
+    <value>Douban</value>
+  </data>
+  <data name="BuildDoubanCacheTask_Description_Builds_a_local_Douban_metadata_cache" xml:space="preserve">
+    <value>Builds a local Douban metadata cache for items that carry a Douban id and back-fills missing ratings.</value>
+  </data>
+  <data name="PopulateDoubanIdTask_Description_Resolve_Douban_IDs_from_IMDb_via_WikiData" xml:space="preserve">
+    <value>Resolves missing Douban ids from IMDb ids via the WikiData bridge and writes them to the items.</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_Rating_Rating" xml:space="preserve">
+    <value>Rating</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_Cast_Cast" xml:space="preserve">
+    <value>Cast</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_NameOverview_Name_and_Overview" xml:space="preserve">
+    <value>Name and Overview</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_Poster_Poster" xml:space="preserve">
+    <value>Poster</value>
+  </data>
+  <data name="MetadataEnhanceOptions_EnableDoubanAssistScraping_Enable_Douban_Assist_Scraping" xml:space="preserve">
+    <value>Enable Douban Assist Scraping</value>
+  </data>
+  <data name="MetadataEnhanceOptions_EnableDoubanAssistScraping_Enable_the_Douban_assistant__cache_task_and_scrape_endpoint__Default_is_OFF_" xml:space="preserve">
+    <value>Enable the Douban assistant (cache task and scrape endpoint). Default is OFF.</value>
+  </data>
+  <data name="MetadataEnhanceOptions_DoubanAssistScrapeScope_Douban_Assist_Scrape_Scope" xml:space="preserve">
+    <value>Douban Assist Scrape Scope</value>
+  </data>
+  <data name="MetadataEnhanceOptions_DoubanAssistScrapeScope_Which_fields_a_Douban_scrape_applies_to_the_item__Default_is_ALL_" xml:space="preserve">
+    <value>Which fields a Douban scrape applies to the item. Default is ALL.</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanAccessToken_Douban_Access_Token" xml:space="preserve">
+    <value>Douban Access Token</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanAccessToken_Optional_token_for_the_Douban_assistant__Leave_blank_to_use_the_public_m_douban_com_endpoints_" xml:space="preserve">
+    <value>Optional token for the Douban assistant. Leave blank to use the public m.douban.com endpoints.</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanCookie_Douban_Cookie" xml:space="preserve">
+    <value>Douban Cookie</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanCookie_Optional_cookie_header_for_the_Douban_assistant__Leave_blank_for_anonymous_access_" xml:space="preserve">
+    <value>Optional cookie header for the Douban assistant. Leave blank for anonymous access.</value>
   </data>
 </root>

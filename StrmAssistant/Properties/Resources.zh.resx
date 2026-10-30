@@ -1,4 +1,4 @@
-<root>
+﻿<root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -922,5 +922,137 @@
   </data>
   <data name="Rating_RatingUpdateLookbackDays_Only_update_ratings_for_items_released_within_this_many_days__Default_is_365_" xml:space="preserve">
     <value>只更新首播日期在回看窗口内的条目评分，避免全库重刷。默认 365 天。</value>
+  </data>
+  <data name="MetadataBuildOptions_EditorTitle_Metadata_Cache" xml:space="preserve">
+    <value>元数据缓存</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheMode_Metadata_Cache_Mode" xml:space="preserve">
+    <value>元数据缓存模式</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheMode_Whether_and_how_to_use_the_local_metadata_cache__Default_is_Disabled_" xml:space="preserve">
+    <value>是否以及如何使用本地元数据缓存。默认为禁用。</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheRootFolder_Cache_Root_Folder" xml:space="preserve">
+    <value>缓存根目录</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheRootFolder_Root_folder_to_store_metadata_cache_JSON_files__Required_when_cache_mode_is_enabled_" xml:space="preserve">
+    <value>存放元数据缓存 JSON 文件的根目录。启用缓存模式时必填。</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheOptionalImageTypes_Optional_Image_Types" xml:space="preserve">
+    <value>可选图片类型</value>
+  </data>
+  <data name="MetadataBuildOptions_MetadataCacheOptionalImageTypes_Image_types_to_include_in_the_cache_besides_the_primary_image__Default_is_EMPTY_" xml:space="preserve">
+    <value>除主图外要纳入缓存的图片类型。默认为空。</value>
+  </data>
+  <data name="MetadataCacheOption_None_Disabled" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+  <data name="MetadataCacheOption_PreferCacheThenOnline_Cache_first__fall_back_to_online" xml:space="preserve">
+    <value>优先缓存，缺失时回落在在线抓取</value>
+  </data>
+  <data name="MetadataCacheOption_PreferOnlineWithCache_Online_first__write_back_to_cache" xml:space="preserve">
+    <value>优先在线抓取，结果写回缓存</value>
+  </data>
+  <data name="MetadataCacheOption_UseOverrideCacheOnly_Cache_only__never_hit_online" xml:space="preserve">
+    <value>仅用覆盖缓存，不发起在线抓取</value>
+  </data>
+  <data name="MetadataCacheRootFolderNotExist" xml:space="preserve">
+    <value>启用元数据缓存模式时必须填写缓存根目录。</value>
+  </data>
+  <data name="MetadataScrapeOptions_EditorTitle_Scrape_Rules" xml:space="preserve">
+    <value>抓取规则</value>
+  </data>
+  <data name="MetadataScrapeOptions_EnableAltMovieDbUrl_Enable_Alternative_MovieDb_URL" xml:space="preserve">
+    <value>启用 TMDb 备选地址</value>
+  </data>
+  <data name="MetadataScrapeOptions_EnableAltMovieDbUrl_Use_alternative_TMDb_API_URL_image_URL_and_API_key_instead_of_the_system_defaults__Default_is_False_" xml:space="preserve">
+    <value>用备选的 TMDb API 地址、图片地址与 API Key 取代系统默认值。默认关闭。</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiUrl_Alternative_MovieDb_API_URL" xml:space="preserve">
+    <value>TMDb 备选 API 地址</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiUrl_Default_alternative_is_https___api_tmdb_org__Blank_uses_system_default_https___api_themoviedb_org_" xml:space="preserve">
+    <value>默认备选地址为 https://api.tmdb.org；留空则使用系统默认 https://api.themoviedb.org。</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiKey_Alternative_MovieDb_API_Key" xml:space="preserve">
+    <value>TMDb 备选 API Key</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbApiKey_API_key_used_with_the_alternative_TMDb_endpoint__Blank_uses_system_default_" xml:space="preserve">
+    <value>配合备选 TMDb 端点使用的 API Key。留空则使用系统默认。</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbImageUrl_Alternative_MovieDb_Image_URL" xml:space="preserve">
+    <value>TMDb 备选图片地址</value>
+  </data>
+  <data name="MetadataScrapeOptions_AltMovieDbImageUrl_Base_URL_for_TMDb_images__Blank_uses_system_default_" xml:space="preserve">
+    <value>TMDb 图片的基址。留空则使用系统默认。</value>
+  </data>
+  <data name="MetadataScrapeOptions_ChineseTvdb_Chinese_TVDB" xml:space="preserve">
+    <value>TVDB 中文优先</value>
+  </data>
+  <data name="MetadataScrapeOptions_ChineseTvdb_When_set__TVDB_metadata_is_preferred_in_Chinese_languages__Default_is_False_" xml:space="preserve">
+    <value>开启后 TVDB 元数据优先取中文。默认关闭。</value>
+  </data>
+  <data name="MetadataScrapeOptions_BlockNonFallbackLanguage_Block_Non_Fallback_Languages" xml:space="preserve">
+    <value>屏蔽非回退语言</value>
+  </data>
+  <data name="MetadataScrapeOptions_BlockNonFallbackLanguage_Only_keep_metadata_in_MovieDb_TVDB_fallback_languages__Default_is_False_" xml:space="preserve">
+    <value>只保留 MovieDb/TVDB 回退语言范围内的元数据。默认关闭。</value>
+  </data>
+  <data name="MetadataScrapeOptions_LocalEpisodeGroup_Local_Episode_Group" xml:space="preserve">
+    <value>本地剧集分组</value>
+  </data>
+  <data name="MetadataScrapeOptions_LocalEpisodeGroup_Use_local_absolute_episode_numbering_for_TVDB_episodes__Default_is_False_" xml:space="preserve">
+    <value>TVDB 剧集使用本地绝对集数编号。默认关闭。</value>
+  </data>
+  <data name="MetadataScrapeOptions_MovieDbEpisodeGroup_MovieDb_Episode_Group" xml:space="preserve">
+    <value>TMDb 剧集分组</value>
+  </data>
+  <data name="MetadataScrapeOptions_MovieDbEpisodeGroup_Use_the_TMDb_episode_group_endpoint_instead_of_the_default_season_episodes__Default_is_False_" xml:space="preserve">
+    <value>使用 TMDb 剧集分组端点替代默认的按季取集。默认关闭。</value>
+  </data>
+  <data name="DoubanExternalId_Name_Douban" xml:space="preserve">
+    <value>豆瓣</value>
+  </data>
+  <data name="BuildDoubanCacheTask_Description_Builds_a_local_Douban_metadata_cache" xml:space="preserve">
+    <value>为已有豆瓣 ID 的条目构建本地豆瓣元数据缓存，并回填缺失的评分。</value>
+  </data>
+  <data name="PopulateDoubanIdTask_Description_Resolve_Douban_IDs_from_IMDb_via_WikiData" xml:space="preserve">
+    <value>通过 WikiData 桥接，从 IMDb ID 解析缺失的豆瓣 ID 并写入条目。</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_Rating_Rating" xml:space="preserve">
+    <value>评分</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_Cast_Cast" xml:space="preserve">
+    <value>演职员</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_NameOverview_Name_and_Overview" xml:space="preserve">
+    <value>名称与简介</value>
+  </data>
+  <data name="DoubanAssistScrapeOption_Poster_Poster" xml:space="preserve">
+    <value>海报</value>
+  </data>
+  <data name="MetadataEnhanceOptions_EnableDoubanAssistScraping_Enable_Douban_Assist_Scraping" xml:space="preserve">
+    <value>启用豆瓣辅助刮削</value>
+  </data>
+  <data name="MetadataEnhanceOptions_EnableDoubanAssistScraping_Enable_the_Douban_assistant__cache_task_and_scrape_endpoint__Default_is_OFF_" xml:space="preserve">
+    <value>启用豆瓣助手（缓存任务与刮削端点）。默认关闭。</value>
+  </data>
+  <data name="MetadataEnhanceOptions_DoubanAssistScrapeScope_Douban_Assist_Scrape_Scope" xml:space="preserve">
+    <value>豆瓣辅助刮削范围</value>
+  </data>
+  <data name="MetadataEnhanceOptions_DoubanAssistScrapeScope_Which_fields_a_Douban_scrape_applies_to_the_item__Default_is_ALL_" xml:space="preserve">
+    <value>豆瓣刮削会应用到条目的哪些字段。默认为全部。</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanAccessToken_Douban_Access_Token" xml:space="preserve">
+    <value>豆瓣访问令牌</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanAccessToken_Optional_token_for_the_Douban_assistant__Leave_blank_to_use_the_public_m_douban_com_endpoints_" xml:space="preserve">
+    <value>豆瓣助手的可选令牌。留空则使用公共 m.douban.com 端点。</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanCookie_Douban_Cookie" xml:space="preserve">
+    <value>豆瓣 Cookie</value>
+  </data>
+  <data name="MetadataRefreshOptions_DoubanCookie_Optional_cookie_header_for_the_Douban_assistant__Leave_blank_for_anonymous_access_" xml:space="preserve">
+    <value>豆瓣助手的可选 Cookie 请求头。留空则匿名访问。</value>
   </data>
 </root>

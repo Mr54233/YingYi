@@ -50,6 +50,12 @@ namespace StrmAssistant.Options
         [DisplayNameL("NetworkOptions_EditorTitle_Network", typeof(Resources))]
         public ServerOptions ServerOptions { get; set; } = new ServerOptions();
 
+        [DisplayNameL("MetadataBuildOptions_EditorTitle_Metadata_Cache", typeof(Resources))]
+        public MetadataBuildOptions MetadataBuildOptions { get; set; } = new MetadataBuildOptions();
+
+        [DisplayNameL("MetadataScrapeOptions_EditorTitle_Scrape_Rules", typeof(Resources))]
+        public MetadataScrapeOptions MetadataScrapeOptions { get; set; } = new MetadataScrapeOptions();
+
         [DisplayNameL("AboutOptions_EditorTitle_About", typeof(Resources))]
         public AboutOptions AboutOptions { get; set; } = new AboutOptions();
 

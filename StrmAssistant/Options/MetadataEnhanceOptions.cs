@@ -79,5 +79,36 @@ namespace StrmAssistant.Options
         [DescriptionL("MetadataEnhanceOptions_HidePersonPreference_Which_persons_the_delete_task_targets_when_hiding_is_enabled__No_Image_Only_targets_persons_without_a_primary_image__Default_is_No_Image_Only_", typeof(Resources))]
         [VisibleCondition(nameof(HidePersonNoImage), SimpleCondition.IsTrue)]
         public string HidePersonPreference { get; set; } = HidePersonOption.NoImageOnly.ToString();
+
+        public enum DoubanAssistScrapeOption
+        {
+            [DescriptionL("DoubanAssistScrapeOption_Rating_Rating", typeof(Resources))]
+            Rating,
+            [DescriptionL("DoubanAssistScrapeOption_Cast_Cast", typeof(Resources))]
+            Cast,
+            [DescriptionL("DoubanAssistScrapeOption_NameOverview_Name_and_Overview", typeof(Resources))]
+            NameOverview,
+            [DescriptionL("DoubanAssistScrapeOption_Poster_Poster", typeof(Resources))]
+            Poster
+        }
+
+        [DisplayNameL("MetadataEnhanceOptions_EnableDoubanAssistScraping_Enable_Douban_Assist_Scraping", typeof(Resources))]
+        [DescriptionL("MetadataEnhanceOptions_EnableDoubanAssistScraping_Enable_the_Douban_assistant__cache_task_and_scrape_endpoint__Default_is_OFF_", typeof(Resources))]
+        [Required]
+        public bool EnableDoubanAssistScraping { get; set; } = false;
+
+        [DisplayNameL("MetadataEnhanceOptions_DoubanAssistScrapeScope_Douban_Assist_Scrape_Scope", typeof(Resources))]
+        [DescriptionL("MetadataEnhanceOptions_DoubanAssistScrapeScope_Which_fields_a_Douban_scrape_applies_to_the_item__Default_is_ALL_", typeof(Resources))]
+        [EditMultilSelect]
+        [SelectItemsSource(nameof(DoubanAssistScrapeOptionList))]
+        [Required]
+        public string DoubanAssistScrapeScope { get; set; } = string.Join(",",
+            DoubanAssistScrapeOption.Rating.ToString(),
+            DoubanAssistScrapeOption.Cast.ToString(),
+            DoubanAssistScrapeOption.NameOverview.ToString(),
+            DoubanAssistScrapeOption.Poster.ToString());
+
+        [Browsable(false)]
+        public List<EditorSelectOption> DoubanAssistScrapeOptionList { get; set; } = new List<EditorSelectOption>();
     }
 }
