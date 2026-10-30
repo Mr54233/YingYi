@@ -1,4 +1,30 @@
-﻿define(['connectionManager', 'globalize', 'loading', 'toast', 'confirm', 'dialog'], function (connectionManager, globalize, loading, toast, confirm, dialog) {
+define(['connectionManager', 'globalize', 'loading', 'toast', 'confirm', 'dialog'], function (connectionManager, globalize, loading, toast, confirm, dialog) {
+    // Phase 4 UI assets are server-gated: importing them proactively is safe because
+    // disabled assets return HTTP 404 and are ignored by the loader. This keeps the
+    // feature switches on the server as the source of truth instead of duplicating
+    // plugin settings in the browser bundle.
+    function loadGatedUiAssets() {
+        var assets = [
+            'indicator', 'item', 'list', 'listcontroller', 'linkeditems',
+            'mediainfo', 'refreshdialog', 'libraryoptionseditor'
+        ];
+        assets.forEach(function (name) {
+            try {
+                if (window.Emby && typeof Emby.importModule === 'function') {
+                    Emby.importModule('./modules/' + name + '.js').catch(function () { });
+                }
+            } catch (e) {
+                // An unavailable optional asset must never break Emby navigation.
+            }
+        });
+        // Filter menu is an HTML fragment, not an AMD module; request it only when
+        // the server-side gate is enabled and leave insertion to its own initializer.
+        try {
+            fetch('./modules/filtermenu.html', { credentials: 'same-origin' }).catch(function () { });
+        } catch (e) { }
+    }
+
+    setTimeout(loadGatedUiAssets, 0);
 
     return {
         copy: function (libraryId) {
