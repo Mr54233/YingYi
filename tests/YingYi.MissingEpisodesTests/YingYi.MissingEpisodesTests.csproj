@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <AssemblyName>YingYi.MissingEpisodesTests</AssemblyName>
+    <RootNamespace>StrmAssistant.Tests</RootNamespace>
+  </PropertyGroup>
+  <!--
+    P3-4 MissingEpisodes MVP 单元测试。
+    只链接纯计算文件（DTO + ComputeMissing），不拉 StrmAssistant.csproj：
+    插件工程是 netstandard2.1 + ILRepack PostBuild，直接引用会连打包步骤一起跑。
+  -->
+  <ItemGroup>
+    <Compile Include="..\..\StrmAssistant\Web\Dto\MissingEpisodesDto.cs" Link="Web\Dto\MissingEpisodesDto.cs" />
+    <Compile Include="..\..\StrmAssistant\Web\Dto\MissingEpisodesCalculator.cs" Link="Web\Dto\MissingEpisodesCalculator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
