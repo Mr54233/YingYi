@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit" Version="2.9.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Link only the pure rule file; the task itself needs the Emby host and is
+         verified in the sandbox after the first release exists. -->
+    <Compile Include="..\..\StrmAssistant\ScheduledTask\UpdateSuppressRule.cs" Link="UpdateSuppressRule.cs" />
+  </ItemGroup>
+</Project>
