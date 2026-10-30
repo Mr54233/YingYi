@@ -56,6 +56,9 @@ namespace StrmAssistant.Options
         [DisplayNameL("MetadataScrapeOptions_EditorTitle_Scrape_Rules", typeof(Resources))]
         public MetadataScrapeOptions MetadataScrapeOptions { get; set; } = new MetadataScrapeOptions();
 
+        [DisplayNameL("UIFunctionOptions_EditorTitle_UI_Functions", typeof(Resources))]
+        public UIFunctionOptions UIFunctionOptions { get; set; } = new UIFunctionOptions();
+
         [DisplayNameL("AboutOptions_EditorTitle_About", typeof(Resources))]
         public AboutOptions AboutOptions { get; set; } = new AboutOptions();
 

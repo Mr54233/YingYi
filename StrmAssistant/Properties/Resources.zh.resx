@@ -1,4 +1,4 @@
-﻿<root>
+<root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -1055,4 +1055,22 @@
   <data name="MetadataRefreshOptions_DoubanCookie_Optional_cookie_header_for_the_Douban_assistant__Leave_blank_for_anonymous_access_" xml:space="preserve">
     <value>豆瓣助手的可选 Cookie 请求头。留空则匿名访问。</value>
   </data>
+  <data name="UIFunctionOptions_ReplaceUnplayedWithTotal_Replace_Unplayed_With_Total" xml:space="preserve"><value>Replace Unplayed With Total</value></data>
+  <data name="UIFunctionOptions_ItemOrderOption_Item_order_used_by_the_list_enhancement__Default_is_Default_" xml:space="preserve"><value>Item order used by list enhancement. Default is Default.</value></data>
+  <data name="UIFunctionOptions_ReplaceUnplayedWithTotal_Replace_unplayed_count_with_total_count__Default_is_OFF_" xml:space="preserve"><value>Replace unplayed count with total count. Default is OFF.</value></data>
+  <data name="UIFunctionOptions_OptimizeMediaItemOrder_Optimize_media_item_display_order__Default_is_OFF_" xml:space="preserve"><value>Optimize media item display order. Default is OFF.</value></data>
+  <data name="UIFunctionOptions_ItemOrderOption_Item_Order" xml:space="preserve"><value>Item Order</value></data>
+  <data name="UIFunctionOptions_MarkPreviousEpisodesPlayedThreshold_Threshold" xml:space="preserve"><value>Previous Episodes Threshold</value></data>
+  <data name="UIFunctionOptions_OptimizeMediaItemOrder_Optimize_Media_Item_Order" xml:space="preserve"><value>Optimize Media Item Order</value></data>
+  <data name="UIFunctionOptions_EnforceUserDisplayOption_Enforce_User_Display" xml:space="preserve"><value>Enforce User Display</value></data>
+  <data name="UIFunctionOptions_MarkPreviousEpisodesPlayedThreshold_Number_of_previous_episodes_to_mark__Default_is_0_" xml:space="preserve"><value>Number of previous episodes to mark. Default is 0.</value></data>
+  <data name="UIFunctionOptions_ReverseLogLines_Reverse_Log_Lines" xml:space="preserve"><value>Reverse Log Lines</value></data>
+  <data name="UIFunctionOptions_LibraryScopePlayProgress_Library_Scope_Play_Progress" xml:space="preserve"><value>Library Scope Play Progress</value></data>
+  <data name="UIFunctionOptions_ShowCollectionsFromSeasons_Show_Collections_From_Seasons" xml:space="preserve"><value>Show Collections From Seasons</value></data>
+  <data name="UIFunctionOptions_MarkPreviousEpisodesPlayed_Mark_Previous_Episodes_Played" xml:space="preserve"><value>Mark Previous Episodes Played</value></data>
+  <data name="UIFunctionOptions_MarkPreviousEpisodesPlayed_Mark_previous_episodes_as_played__Default_is_OFF_" xml:space="preserve"><value>Mark previous episodes as played. Default is OFF.</value></data>
+  <data name="UIFunctionOptions_ShowCollectionsFromSeasons_Show_collections_from_seasons__Default_is_OFF_" xml:space="preserve"><value>Show collections from seasons. Default is OFF.</value></data>
+  <data name="UIFunctionOptions_ReverseLogLines_Show_newest_log_lines_first__Default_is_OFF_" xml:space="preserve"><value>Show newest log lines first. Default is OFF.</value></data>
+  <data name="UIFunctionOptions_LibraryScopePlayProgress_Keep_play_progress_separate_per_library__Default_is_OFF_" xml:space="preserve"><value>Keep play progress separate per library. Default is OFF.</value></data>
+  <data name="UIFunctionOptions_EnforceUserDisplayOption_Enforce_user_display_for_missing_episodes__Default_is_OFF_" xml:space="preserve"><value>Enforce user display for missing episodes. Default is OFF.</value></data>
 </root>

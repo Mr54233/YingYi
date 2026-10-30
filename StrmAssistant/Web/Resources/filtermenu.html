@@ -1,0 +1,5 @@
+<div class="filterMenu yingyi-filter-menu" role="group" aria-label="YingYi filters">
+  <button type="button" class="raised filterButton" data-filter="yingyi-ready">YingYi enhanced</button>
+  <button type="button" class="raised filterButton" data-filter="all">All items</button>
+</div>
+<script>(function(){document.querySelectorAll('.yingyi-filter-menu [data-filter]').forEach(function(b){b.addEventListener('click',function(){document.dispatchEvent(new CustomEvent('yingyi-filter',{detail:b.dataset.filter}));});});}());</script>

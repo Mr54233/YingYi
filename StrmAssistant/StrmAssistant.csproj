@@ -11,11 +11,29 @@
   <ItemGroup>
     <None Remove="Web\Resources\shortcuts.js" />
     <None Remove="Web\Resources\strmassistant.js" />
+    <None Remove="Web\Resources\indicator.js" />
+    <None Remove="Web\Resources\item.js" />
+    <None Remove="Web\Resources\list.js" />
+    <None Remove="Web\Resources\listcontroller.js" />
+    <None Remove="Web\Resources\linkeditems.js" />
+    <None Remove="Web\Resources\mediainfo.js" />
+    <None Remove="Web\Resources\refreshdialog.js" />
+    <None Remove="Web\Resources\libraryoptionseditor.js" />
+    <None Remove="Web\Resources\filtermenu.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\thumb.png" />
     <EmbeddedResource Include="Web\Resources\shortcuts.js" />
     <EmbeddedResource Include="Web\Resources\strmassistant.js" />
+    <EmbeddedResource Include="Web\Resources\indicator.js" />
+    <EmbeddedResource Include="Web\Resources\item.js" />
+    <EmbeddedResource Include="Web\Resources\list.js" />
+    <EmbeddedResource Include="Web\Resources\listcontroller.js" />
+    <EmbeddedResource Include="Web\Resources\linkeditems.js" />
+    <EmbeddedResource Include="Web\Resources\mediainfo.js" />
+    <EmbeddedResource Include="Web\Resources\refreshdialog.js" />
+    <EmbeddedResource Include="Web\Resources\libraryoptionseditor.js" />
+    <EmbeddedResource Include="Web\Resources\filtermenu.html" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CHTCHSConv" Version="1.0.0">
