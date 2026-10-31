@@ -43,7 +43,10 @@ namespace StrmAssistant.Options
         [DisplayNameL("MetadataBuildOptions_MetadataCacheMode_Metadata_Cache_Mode", typeof(Resources))]
         [DescriptionL("MetadataBuildOptions_MetadataCacheMode_Whether_and_how_to_use_the_local_metadata_cache__Default_is_Disabled_", typeof(Resources))]
         [SelectItemsSource(nameof(MetadataCacheOptionList))]
-        [SelectShowRadioGroup]
+        // Do not use SelectShowRadioGroup here: GenericEdit's radio renderer consumes
+        // the inline SelectOptions array, while tab ContentData serializes only an empty
+        // placeholder ({Value:"",Name:""}) and the UI displays undefined. A normal
+        // select consumes ItemsSourceId from MetadataCacheOptionList correctly.
         public string MetadataCacheMode { get; set; } = MetadataCacheOption.None.ToString();
 
         [DisplayNameL("MetadataBuildOptions_MetadataCacheRootFolder_Cache_Root_Folder", typeof(Resources))]
