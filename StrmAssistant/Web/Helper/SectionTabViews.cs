@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Emby.Web.GenericEdit;
+using Emby.Web.GenericEdit.Elements;
+using Emby.Web.GenericEdit.Elements.List;
 using MediaBrowser.Model.Dto;
 using MediaBrowser.Model.Events;
 using MediaBrowser.Model.GenericEdit;
@@ -95,7 +97,38 @@ namespace StrmAssistant.Web.Helper
         }
     }
 
-    /// <summary>总览 tab：只读展示插件信息与各分组导航说明。</summary>
+    /// <summary>
+    ///     第 0 个 tab：概览页。ViewMate 的 OverviewPageView 同型 —— ContentData 必须是
+    ///     一个非空 EditableOptionsBase，否则前端渲染空白（用户反馈"第一个影衣是空的"）。
+    /// </summary>
+    internal class SettingsOverviewOptions : EditableOptionsBase
+    {
+        public Emby.Web.GenericEdit.Elements.List.GenericItemList ModuleStatusList { get; set; } =
+            new Emby.Web.GenericEdit.Elements.List.GenericItemList();
+
+        public SettingsOverviewOptions()
+        {
+            var plugin = Plugin.Instance;
+            var version = plugin?.CurrentVersion ?? "unknown";
+
+            ModuleStatusList.Add(new Emby.Web.GenericEdit.Elements.List.GenericListItem
+            {
+                PrimaryText = "当前版本：" + version,
+                Icon = IconNames.info,
+                IconMode = ItemListIconMode.SmallRegular
+            });
+            ModuleStatusList.Add(new Emby.Web.GenericEdit.Elements.List.GenericListItem
+            {
+                PrimaryText = "使用上方标签页切换各设置分组；本页为概览，不含可编辑字段",
+                Icon = IconNames.help_outline,
+                IconMode = ItemListIconMode.SmallRegular
+            });
+        }
+
+        public override string EditorTitle => "概览";
+        public override string EditorDescription => "影医 YingYi 设置概览";
+    }
+
     internal class SettingsOverviewView : PluginPageViewBase
     {
         public SettingsOverviewView(PluginInfo pluginInfo, Func<PluginOptions> getOptions,
@@ -103,6 +136,7 @@ namespace StrmAssistant.Web.Helper
             : base(pluginInfo.Id)
         {
             ShowSave = false;
+            ContentData = new SettingsOverviewOptions();
         }
     }
 }

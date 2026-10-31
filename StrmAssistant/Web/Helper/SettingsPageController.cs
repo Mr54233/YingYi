@@ -21,7 +21,7 @@ namespace StrmAssistant.Web.Helper
     ///     影医设置页 Tab 化（对齐 Pro 版行为）。
     ///     架构：Plugin 重新实现 IHasUIPages（接管页面注册）；
     ///     唯一宿主控制器 SettingsPageController 实现 IHasTabbedUIPages，
-    ///     其 TabPageControllers 提供 5 个 tab（基础/元数据/片头片尾/体验与网络/关于）。
+    ///     其 TabPageControllers 提供 12 个 tab（每组一页）。
     ///     每个 tab 的 ContentData 直接是 PluginOptions 的对应 section（EditableOptionsBase）；
     ///     保存时读全量 → 只赋回本节 → 走 Plugin 的 internal 桥触发 base SaveOptions 事件链。
     ///     JSON 文件名（影医.json）、字段形状、PageId=c2f533:Settings 全部不变。
