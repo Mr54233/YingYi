@@ -53,6 +53,9 @@ namespace StrmAssistant.Web.Helper
 
         public Task<IPluginUIView> CreateDefaultPageView()
         {
+            // BasePluginSimpleUI.OnBeforeShowUI belongs to the private default controller;
+            // once we re-register UIPageControllers, each tab must populate its own option lists.
+            _populateUI(Plugin.Instance.GetPluginOptions());
             IPluginUIView view = new SectionTabView(_pluginInfo.Id, _section, _populateUI, _pluginInfoProvider, _displayName);
             return Task.FromResult(view);
         }
