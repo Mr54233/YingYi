@@ -1,5 +1,6 @@
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Api;
+using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Serialization;
 using StrmAssistant.Rating;
@@ -24,7 +25,18 @@ namespace StrmAssistant.Web.Service
 
         public async Task<RatingsSummary> Get(GetRatingsSummary request)
         {
-            var item = _libraryManager.GetItemById(request.Id);
+            BaseItem item;
+            try
+            {
+                item = _libraryManager.GetItemById(request.Id);
+            }
+            catch (Exception e)
+            {
+                // GetItemById throws for malformed ids (e.g. "Unrecognized Guid format",
+                // 500-char garbage). NAS 真机实测：超长/非法 ID 直接 500。统一映射 400。
+                throw new ArgumentException("Invalid item id: " + request.Id, nameof(request.Id), e);
+            }
+
             if (item == null)
             {
                 throw new ArgumentException("Item not found: " + request.Id, nameof(request.Id));

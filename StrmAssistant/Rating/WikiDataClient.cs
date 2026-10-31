@@ -18,7 +18,10 @@ namespace StrmAssistant.Rating
     {
         private const string SparqlEndpoint = "https://query.wikidata.org/sparql";
         private const int RequestIntervalMs = 1000;
-        private const int RequestTimeoutSeconds = 15;
+        // NAS 实测（2026-10-31）：WikiData 对家庭宽带 IP 波动极大（1s/24s/60s 不等），
+        // 15s 超时导致大部分解析 unresolved。提到 60s 并加重试。
+        private const int RequestTimeoutSeconds = 60;
+        private const int ResolveRetryCount = 2;
 
         // CALIBRATED 2026-10-29 against live WikiData: tt0111161 (The Shawshank Redemption)
         // -> P4529 = "1292052", which is the correct Douban subject id for 肖申克的救赎.
@@ -75,47 +78,62 @@ LIMIT 1";
                     EscapeSparqlLiteral(normalized), DoubanPropertyId);
                 var url = SparqlEndpoint + "?format=json&query=" + Uri.EscapeDataString(query);
 
-                await ThrottleAsync(RequestIntervalMs, ct).ConfigureAwait(false);
-
-                using (var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct))
+                for (var attempt = 0; attempt <= ResolveRetryCount; attempt++)
                 {
-                    timeoutCts.CancelAfter(TimeSpan.FromSeconds(RequestTimeoutSeconds));
-
-                    var options = new HttpRequestOptions
+                    if (attempt > 0)
                     {
-                        Url = url,
-                        CancellationToken = timeoutCts.Token,
-                        AcceptHeader = "application/json",
-                        BufferContent = true,
-                        UserAgent = Plugin.Instance.UserAgent,
-                        EnableDefaultUserAgent = false
-                    };
+                        // WikiData 会间歇性挂起；失败后等待一段时间再重试。
+                        await Task.Delay(TimeSpan.FromSeconds(5), ct).ConfigureAwait(false);
+                    }
 
-                    using (var response = await _httpClient.SendAsync(options, "GET").ConfigureAwait(false))
+                    await ThrottleAsync(RequestIntervalMs, ct).ConfigureAwait(false);
+
+                    using (var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct))
                     {
-                        if (response.StatusCode != HttpStatusCode.OK)
-                        {
-                            _logger.Debug("WikiData - HTTP {0} while resolving IMDb id {1}",
-                                (int)response.StatusCode, imdbId);
-                            return null;
-                        }
+                        timeoutCts.CancelAfter(TimeSpan.FromSeconds(RequestTimeoutSeconds));
 
-                        using (var stream = response.Content)
+                        var options = new HttpRequestOptions
                         {
-                            var result = _jsonSerializer.DeserializeFromStream<WikiDataResponse>(stream);
-                            var bindings = result?.results?.bindings;
-                            if (bindings == null || bindings.Count == 0)
+                            Url = url,
+                            CancellationToken = timeoutCts.Token,
+                            AcceptHeader = "application/json",
+                            BufferContent = true,
+                            UserAgent = Plugin.Instance.UserAgent,
+                            EnableDefaultUserAgent = false,
+                            // Emby HttpClient 的 EnableAutomaticTimeouts 默认会按 URL 推断一个
+                            // 约 20s 的超时并覆盖外层 CancelAfter（真机日志实测 20s timeout）。
+                            // 显式关掉自动超时、用 TimeoutMs 对齐 60s。
+                            EnableAutomaticTimeouts = false,
+                            TimeoutMs = RequestTimeoutSeconds * 1000
+                        };
+
+                        using (var response = await _httpClient.SendAsync(options, "GET").ConfigureAwait(false))
+                        {
+                            if (response.StatusCode != HttpStatusCode.OK)
                             {
-                                return null;
+                                _logger.Debug("WikiData - HTTP {0} while resolving IMDb id {1} (attempt {2})",
+                                    (int)response.StatusCode, imdbId, attempt + 1);
+                                continue;
                             }
 
-                            for (var i = 0; i < bindings.Count; i++)
+                            using (var stream = response.Content)
                             {
-                                var row = bindings[i];
-                                if (row != null && row.TryGetValue("doubanId", out var binding) &&
-                                    binding != null && !string.IsNullOrWhiteSpace(binding.value))
+                                var result = _jsonSerializer.DeserializeFromStream<WikiDataResponse>(stream);
+                                var bindings = result?.results?.bindings;
+                                if (bindings == null || bindings.Count == 0)
                                 {
-                                    return binding.value.Trim();
+                                    // 空绑定通常意味着 Wikidata 里确实没有该条目，重试无意义。
+                                    return null;
+                                }
+
+                                for (var i = 0; i < bindings.Count; i++)
+                                {
+                                    var row = bindings[i];
+                                    if (row != null && row.TryGetValue("doubanId", out var binding) &&
+                                        binding != null && !string.IsNullOrWhiteSpace(binding.value))
+                                    {
+                                        return binding.value.Trim();
+                                    }
                                 }
                             }
                         }

@@ -3,6 +3,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 using StrmAssistant.Web.Api;
 using System;
+using System.Collections.Generic;
 
 namespace StrmAssistant.Web.Service
 {
@@ -17,17 +18,35 @@ namespace StrmAssistant.Web.Service
 
         public void Post(LockItem request)
         {
-            var itemById = _libraryManager.GetItemById(request.ItemId);
+            BaseItem itemById;
+            try
+            {
+                itemById = _libraryManager.GetItemById(request.ItemId);
+            }
+            catch (Exception e)
+            {
+                // GetItemById throws (e.g. "Unrecognized Guid format") for a malformed id —
+                // same guard as LibraryStructureService. NAS 真机实测：非法 ID 直接 500。
+                throw new ArgumentException("Invalid item id: " + request.ItemId, nameof(request.ItemId), e);
+            }
 
             if (itemById == null)
             {
                 throw new ArgumentException("Item not found: " + request.ItemId, nameof(request.ItemId));
             }
 
-            var items = _libraryManager.GetItemList(new InternalItemsQuery
+            var items = new List<BaseItem> { itemById };
+            var sameKey = _libraryManager.GetItemList(new InternalItemsQuery
             {
                 PresentationUniqueKey = itemById.PresentationUniqueKey
             });
+            foreach (var k in sameKey)
+            {
+                if (k != null && !items.Contains(k))
+                {
+                    items.Add(k);
+                }
+            }
 
             foreach (var item in items)
             {
