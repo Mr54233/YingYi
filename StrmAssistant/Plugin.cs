@@ -55,19 +55,27 @@ namespace StrmAssistant
     public class Plugin: BasePluginSimpleUI<PluginOptions>, IHasUIPages, IHasThumbImage
     {
         private List<MediaBrowser.Model.Plugins.UI.IPluginUIPageController> _tabPages;
+        private readonly object _tabPagesLock = new object();
 
         public IReadOnlyCollection<MediaBrowser.Model.Plugins.UI.IPluginUIPageController> UIPageControllers
         {
             get
             {
+                // 宿主可能在多请求线程上首次读取；懒加载需加锁避免重复构造/注册。
                 if (_tabPages == null)
                 {
-                    PluginInfo basePluginInfo = base.GetPluginInfo();
-                    _tabPages = new List<MediaBrowser.Model.Plugins.UI.IPluginUIPageController>
+                    lock (_tabPagesLock)
                     {
-                        new Web.Helper.SettingsPageController(this, basePluginInfo, Logger,
-                            GetPluginOptions, SaveOptions, options => PopulateUIOptions(options))
-                    };
+                        if (_tabPages == null)
+                        {
+                            PluginInfo basePluginInfo = base.GetPluginInfo();
+                            _tabPages = new List<MediaBrowser.Model.Plugins.UI.IPluginUIPageController>
+                            {
+                                new Web.Helper.SettingsPageController(this, basePluginInfo, Logger,
+                                    GetPluginOptions, SaveOptions, options => PopulateUIOptions(options))
+                            };
+                        }
+                    }
                 }
                 return _tabPages.AsReadOnly();
             }
@@ -530,6 +538,17 @@ namespace StrmAssistant
             }
 
             populateUI(options);
+
+            // 跨节校验：CatchupMode+Fingerprint 需 UnlockIntroSkip（原 PluginOptions.Validate）。
+            // 单页 UI 由 ContentData=根对象时 Validate 覆盖；Tab 化后根级 Validate 不再自动执行，
+            // 这里复刻同一条规则并拒绝保存（与旧 UI 弹错一致，而不是静默剥离用户勾选）。
+            if (options.GeneralOptions.CatchupMode &&
+                options.GeneralOptions.CatchupTaskScope.Contains(CatchupTask.Fingerprint.ToString()) &&
+                !options.IntroSkipOptions.UnlockIntroSkip)
+            {
+                throw new ArgumentException(Resources.InvalidFingerprintCatchup, nameof(section));
+            }
+
             SaveOptions(options);
         }
 
