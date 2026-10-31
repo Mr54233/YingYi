@@ -24,9 +24,11 @@ using MediaBrowser.Model.Drawing;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Events;
 using MediaBrowser.Model.Globalization;
+using MediaBrowser.Model.GenericEdit;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Logging;
 using MediaBrowser.Model.Plugins;
+using MediaBrowser.Model.Plugins.UI;
 using MediaBrowser.Model.Serialization;
 using MediaBrowser.Model.Tasks;
 using StrmAssistant.Common;
@@ -50,8 +52,27 @@ using static StrmAssistant.Options.Utility;
 
 namespace StrmAssistant
 {
-    public class Plugin: BasePluginSimpleUI<PluginOptions>, IHasThumbImage
+    public class Plugin: BasePluginSimpleUI<PluginOptions>, IHasUIPages, IHasThumbImage
     {
+        private List<MediaBrowser.Model.Plugins.UI.IPluginUIPageController> _tabPages;
+
+        public IReadOnlyCollection<MediaBrowser.Model.Plugins.UI.IPluginUIPageController> UIPageControllers
+        {
+            get
+            {
+                if (_tabPages == null)
+                {
+                    PluginInfo basePluginInfo = base.GetPluginInfo();
+                    _tabPages = new List<MediaBrowser.Model.Plugins.UI.IPluginUIPageController>
+                    {
+                        new Web.Helper.SettingsPageController(this, basePluginInfo, Logger,
+                            GetPluginOptions, SaveOptions, options => PopulateUIOptions(options))
+                    };
+                }
+                return _tabPages.AsReadOnly();
+            }
+        }
+
         public static Plugin Instance { get; private set; }
         public static LibraryApi LibraryApi { get; private set; }
         public static MediaInfoApi MediaInfoApi { get; private set; }
@@ -452,6 +473,66 @@ namespace StrmAssistant
             return GetOptions();
         }
 
+        /// <summary>
+        ///     分 Tab 设置页的 internal 保存桥：读全量选项 → 用 Tab 提交上来的 section 替换
+        ///     对应属性 → 走 base.SaveOptions 触发 OnOptionsSaving/OnOptionsSaved 事件链
+        ///     （运行时开关同步、拼音调度器起停、ffmpeg 路径应用等全部保持原行为）。
+        /// </summary>
+        internal void ApplySection(IEditableObject section, Action<PluginOptions> populateUI)
+        {
+            var options = GetPluginOptions();
+            // Clone section values were deserialized by GenericUI; keep the full root object
+            // and only replace the matching section below. The base SaveOptions path remains
+            // the single writer and executes all existing cross-section validation/hooks.
+
+            // ContentData 是 GenericUI 反序列化后的新 section 实例，不能用引用相等判断。
+            // 必须按真实类型写回全量 PluginOptions，否则 tab 保存会 200 但值不落盘。
+            switch (section)
+            {
+                case GeneralOptions value:
+                    options.GeneralOptions = value;
+                    break;
+                case MediaInfoExtractOptions value:
+                    options.MediaInfoExtractOptions = value;
+                    break;
+                case PinyinEnhanceOptions value:
+                    options.PinyinEnhanceOptions = value;
+                    break;
+                case MetadataEnhanceOptions value:
+                    options.MetadataEnhanceOptions = value;
+                    break;
+                case StrmAssistant.Options.MetadataRefreshOptions value:
+                    options.MetadataRefreshOptions = value;
+                    break;
+                case MetadataBuildOptions value:
+                    options.MetadataBuildOptions = value;
+                    break;
+                case MetadataScrapeOptions value:
+                    options.MetadataScrapeOptions = value;
+                    break;
+                case IntroSkipOptions value:
+                    options.IntroSkipOptions = value;
+                    break;
+                case ExperienceEnhanceOptions value:
+                    options.ExperienceEnhanceOptions = value;
+                    break;
+                case UIFunctionOptions value:
+                    options.UIFunctionOptions = value;
+                    break;
+                case ServerOptions value:
+                    options.ServerOptions = value;
+                    break;
+                case AboutOptions value:
+                    options.AboutOptions = value;
+                    break;
+                default:
+                    throw new ArgumentException("Unknown settings tab section: " + section?.GetType().FullName, nameof(section));
+            }
+
+            populateUI(options);
+            SaveOptions(options);
+        }
+
         public void SavePluginOptionsSuppress()
         {
             _currentSuppressOnOptionsSaved = true;
@@ -780,6 +861,17 @@ namespace StrmAssistant
 
         protected override PluginOptions OnBeforeShowUI(PluginOptions options)
         {
+            PopulateUIOptions(options);
+            return base.OnBeforeShowUI(options);
+        }
+
+        /// <summary>
+        ///     设置页数据源填充（下拉列表、免责声明、冲突状态行、版本信息）。
+        ///     从 OnBeforeShowUI 抽出：分 Tab 后每个 Tab 视图构造时也要调用，
+        ///     否则对应 MultilSelect 的选项列表为空。
+        /// </summary>
+        internal void PopulateUIOptions(PluginOptions options)
+        {
             options.Disclaimer.Clear();
             options.Disclaimer.Add(
                 new GenericListItem
@@ -1000,8 +1092,6 @@ namespace StrmAssistant
             }
 
             options.IntroSkipOptions.UserList = userList;
-
-            return base.OnBeforeShowUI(options);
         }
 
         protected override void OnCreatePageInfo(PluginPageInfo pageInfo)
